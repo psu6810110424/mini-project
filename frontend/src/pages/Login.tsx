@@ -13,12 +13,11 @@ const Login: React.FC = () => {
         username,
         password,
       });
-      
-      // เก็บ JWT ลง Local Storage ตามโจทย์
+
       localStorage.setItem('token', response.data.access_token);
       
       alert('Login Success!');
-      window.location.href = '/'; // กลับไปหน้าแรก
+      window.location.href = '/'; 
     } catch (error) {
       alert('Username หรือ Password ไม่ถูกต้อง');
     }

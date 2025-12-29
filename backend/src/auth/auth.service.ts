@@ -1,7 +1,8 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, UnauthorizedException} from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
+import { IsNotEmpty, MinLength, IsString } from 'class-validator';
 
 @Injectable()
 export class AuthService {
@@ -9,7 +10,7 @@ export class AuthService {
     private usersService: UsersService,
     private jwtService: JwtService,
   ) {}
-  
+
   async register(username: string, pass: string, role: string) {
     const salt = await bcrypt.genSalt();
     const hashedPassword = await bcrypt.hash(pass, salt);
@@ -26,4 +27,17 @@ export class AuthService {
     }
     throw new UnauthorizedException('ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง');
   }
+}
+
+export class RegisterDto {
+  @IsString()
+  @IsNotEmpty({ message: 'กรุณากรอกชื่อผู้ใช้งาน' })
+  username: string;
+
+  @IsString()
+  @MinLength(6, { message: 'รหัสผ่านต้องมีความยาวอย่างน้อย 6 ตัวอักษร' })
+  password: string;
+
+  @IsNotEmpty({ message: 'กรุณาระบุสิทธิ์การใช้งาน' })
+  role: string;
 }

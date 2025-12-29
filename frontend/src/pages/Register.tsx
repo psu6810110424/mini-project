@@ -7,17 +7,32 @@ const Register: React.FC = () => {
   const [password, setPassword] = useState<string>('');
   const [role, setRole] = useState<string>('USER');
   const navigate = useNavigate();
-
   const handleRegister = async (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-      await axios.post('http://localhost:3000/auth/register', { username, password, role });
-      alert('สมัครสมาชิกสำเร็จ!');
-      navigate('/login');
-    } catch (error) {
-      alert('การสมัครสมาชิกล้มเหลว');
-    }
-  };
+  e.preventDefault();
+  
+  if (!username.trim() || !password.trim()) {
+    alert('กรุณากรอกข้อมูลให้ครบถ้วนทุกช่อง (ห้ามเว้นว่าง)');
+    return;
+  }
+
+  if (password.length < 6) {
+    alert('รหัสผ่านต้องมีความยาวอย่างน้อย 6 ตัวอักษร');
+    return;
+  }
+
+  try {
+    await axios.post('http://localhost:3000/auth/register', { 
+      username: username.trim(), 
+      password, 
+      role 
+    });
+    alert('สมัครสมาชิกสำเร็จ!');
+    navigate('/login');
+  } catch (error: any) {
+    const message = error.response?.data?.message || 'การสมัครสมาชิกล้มเหลว';
+    alert(Array.isArray(message) ? message.join(', ') : message);
+  }
+};
 
   return (
     <div style={{ padding: '20px' }}>

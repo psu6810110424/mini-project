@@ -14,7 +14,7 @@ import { JwtStrategy } from './jwt.strategy';
       inject: [ConfigService],
       useFactory: (config: ConfigService) => ({
         secret: config.get('JWT_SECRET'),
-        signOptions: { expiresIn: '1d' }, // Token หมดอายุใน 1 วัน
+        signOptions: { expiresIn: '1d' }, 
       }),
     }),
   ],

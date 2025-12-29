@@ -21,28 +21,56 @@ useEffect(() => {
 }, []);
 
  return (
-    <div style={{ padding: '20px' }}>
-      <h1>สนามกีฬาที่เปิดให้บริการ</h1>
-      <div style={{ display: 'grid', gap: '20px' }}>
+    <div style={{ padding: '40px 20px', backgroundColor: '#f9fafb', minHeight: '100vh' }}>
+      <h1 style={{ textAlign: 'center', color: '#111827', marginBottom: '40px', fontSize: '2.5rem' }}>
+        สนามกีฬาที่เปิดให้บริการ
+      </h1>
+      <div style={{ 
+        display: 'grid', 
+        gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', 
+        gap: '25px',
+        maxWidth: '1200px',
+        margin: '0 auto'
+      }}>
         {Array.isArray(fields) && fields.length > 0 ? (
           fields.map((field) => (
-            <div key={field.id} style={{ border: '1px solid #ccc', padding: '15px', borderRadius: '8px' }}>
-              <h3>{field.name}</h3>
-              <p>ราคา: {field.pricePerHour} บาท/ชั่วโมง</p>
-              {token && (
-                <button style={{ backgroundColor: '#4CAF50', color: 'white', marginRight: '10px', padding: '8px 16px', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>
-                  จองสนาม
-                </button>
-              )}
-              {userRole === 'ADMIN' && (
-                <button style={{ backgroundColor: '#f44336', color: 'white', padding: '8px 16px', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>
-                  ลบสนาม (Admin Only)
-                </button>
-              )}
+            <div key={field.id} style={{ 
+              backgroundColor: '#fff', 
+              padding: '24px', 
+              borderRadius: '16px', 
+              boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06)',
+              transition: 'transform 0.2s',
+              border: '1px solid #e5e7eb'
+            }}>
+              <div style={{ fontSize: '1.25rem', fontWeight: 'bold', color: '#1f2937', marginBottom: '8px' }}>
+                {field.name}
+              </div>
+              <p style={{ color: '#6b7280', fontSize: '1rem', marginBottom: '20px' }}>
+                ราคาเริ่มต้น <span style={{ color: '#059669', fontWeight: '600' }}>{field.pricePerHour} บาท</span> / ชม.
+              </p>
+              
+              <div style={{ display: 'flex', gap: '10px' }}>
+                {token && (
+                  <button style={{ 
+                    flex: 1, backgroundColor: '#2563eb', color: 'white', padding: '10px', 
+                    borderRadius: '8px', border: 'none', fontWeight: '500', cursor: 'pointer' 
+                  }}>
+                    จองสนาม
+                  </button>
+                )}
+                {userRole === 'ADMIN' && (
+                  <button style={{ 
+                    backgroundColor: '#ef4444', color: 'white', padding: '10px 15px', 
+                    borderRadius: '8px', border: 'none', cursor: 'pointer' 
+                  }}>
+                    ลบ
+                  </button>
+                )}
+              </div>
             </div>
           ))
         ) : (
-          <p>ขณะนี้ยังไม่มีข้อมูลสนาม หรือ กำลังโหลดข้อมูล...</p>
+          <div style={{ gridColumn: '1/-1', textAlign: 'center', color: '#9ca3af' }}>กำลังโหลดข้อมูล...</div>
         )}
       </div>
     </div>

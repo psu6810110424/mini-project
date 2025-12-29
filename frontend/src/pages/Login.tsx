@@ -24,21 +24,47 @@ const Login: React.FC = () => {
   };
 
   return (
-    <div style={{ padding: '20px' }}>
-      <h2>Login</h2>
-      <form onSubmit={handleLogin}>
-        <input 
-          type="text" 
-          placeholder="Username" 
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) => setUsername(e.target.value)} 
-        />
-        <input 
-          type="password" 
-          placeholder="Password" 
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)} 
-        />
-        <button type="submit">Login</button>
-      </form>
+    <div style={{ 
+      display: 'flex', justifyContent: 'center', alignItems: 'center', 
+      minHeight: '80vh', backgroundColor: '#f3f4f6' 
+    }}>
+      <div style={{ 
+        backgroundColor: 'white', padding: '40px', borderRadius: '16px', 
+        boxShadow: '0 10px 25px -5px rgba(0,0,0,0.1)', width: '100%', maxWidth: '400px' 
+      }}>
+        <h2 style={{ textAlign: 'center', color: '#111827', marginBottom: '30px', fontSize: '1.8rem' }}>
+          เข้าสู่ระบบ
+        </h2>
+        <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+          <div>
+            <label style={{ display: 'block', marginBottom: '8px', color: '#374151', fontSize: '0.9rem' }}>ชื่อผู้ใช้งาน</label>
+            <input 
+              type="text" 
+              style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid #d1d5db', outline: 'none' }}
+              onChange={(e) => setUsername(e.target.value)} 
+              placeholder="Enter your username"
+            />
+          </div>
+          <div>
+            <label style={{ display: 'block', marginBottom: '8px', color: '#374151', fontSize: '0.9rem' }}>รหัสผ่าน</label>
+            <input 
+              type="password" 
+              style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid #d1d5db', outline: 'none' }}
+              onChange={(e) => setPassword(e.target.value)} 
+              placeholder="••••••••"
+            />
+          </div>
+          <button type="submit" style={{ 
+            backgroundColor: '#111827', color: 'white', padding: '12px', 
+            borderRadius: '8px', border: 'none', fontWeight: 'bold', cursor: 'pointer', marginTop: '10px' 
+          }}>
+            Login
+          </button>
+        </form>
+        <p style={{ textAlign: 'center', marginTop: '20px', color: '#6b7280', fontSize: '0.85rem' }}>
+          ยังไม่มีบัญชี? <a href="/register" style={{ color: '#2563eb', textDecoration: 'none' }}>สมัครสมาชิก</a>
+        </p>
+      </div>
     </div>
   );
 };

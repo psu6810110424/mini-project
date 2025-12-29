@@ -5,9 +5,9 @@ import { UsersController } from './users.controller';
 import { User } from './entities/user.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User])], // นำเข้า Entity เข้าไปในระบบ TypeORM
+  imports: [TypeOrmModule.forFeature([User])], 
   controllers: [UsersController],
   providers: [UsersService],
-  exports: [UsersService], // ❗ สำคัญ: ต้อง Export เพื่อให้ AuthModule เรียกใช้งานได้
+  exports: [UsersService], 
 })
 export class UsersModule {}

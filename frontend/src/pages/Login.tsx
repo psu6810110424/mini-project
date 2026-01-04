@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom'; 
 import type { AuthResponse } from '../interfaces/types';
 
 const Login: React.FC = () => {
   const [username, setUsername] = useState<string>('');
   const [password, setPassword] = useState<string>('');
+  const navigate = useNavigate(); 
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -14,10 +16,20 @@ const Login: React.FC = () => {
         password,
       });
 
+      if (response.data.user.role === 'ADMIN') {
+        alert('บัญชีนี้เป็น Admin กรุณาเข้าใช้งานผ่านหน้า Admin Login เท่านั้น');
+        return;
+      }
+
       localStorage.setItem('token', response.data.access_token);
+      localStorage.setItem('user_role', response.data.user.role);
       
       alert('Login Success!');
-      window.location.href = '/'; 
+      
+      navigate('/'); 
+
+      window.location.reload();
+      
     } catch (error) {
       alert('Username หรือ Password ไม่ถูกต้อง');
     }

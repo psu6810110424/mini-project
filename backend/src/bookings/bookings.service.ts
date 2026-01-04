@@ -1,26 +1,64 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, BadRequestException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository, Not, LessThan, MoreThan, Between } from 'typeorm';
+import { Booking } from './entities/booking.entity';
 import { CreateBookingDto } from './dto/create-booking.dto';
-import { UpdateBookingDto } from './dto/update-booking.dto';
 
 @Injectable()
 export class BookingsService {
-  create(createBookingDto: CreateBookingDto) {
-    return 'This action adds a new booking';
+  constructor(
+    @InjectRepository(Booking)
+    private bookingRepository: Repository<Booking>,
+  ) {}
+
+  async create(createBookingDto: CreateBookingDto, userId: number) {
+    const { fieldId, bookingDate, startTime, endTime } = createBookingDto;
+
+    const existingBooking = await this.bookingRepository.findOne({
+      where: [
+        {
+          field: { id: fieldId },
+          bookingDate,
+          status: Not('CANCELLED'),
+          startTime: LessThan(endTime),
+          endTime: MoreThan(startTime),
+        },
+      ],
+    });
+
+    if (existingBooking) {
+      throw new BadRequestException('สนามนี้ถูกจองแล้วในช่วงเวลาดังกล่าว กรุณาเลือกเวลาใหม่');
+    }
+
+    const booking = this.bookingRepository.create({
+      ...createBookingDto,
+      user: { id: userId } as any,
+      field: { id: fieldId } as any,
+    });
+
+    return this.bookingRepository.save(booking);
   }
 
-  findAll() {
-    return `This action returns all bookings`;
-  }
+  async findAll() {
+  return this.bookingRepository.find({ relations: ['user', 'field'] });
+ }
 
-  findOne(id: number) {
-    return `This action returns a #${id} booking`;
-  }
+  async findOne(id: number) {
+    return this.bookingRepository.findOne({ where: { id }, relations: ['user', 'field'] });
+ }
+  async checkAvailability(fieldId: number, date: string, start: string, end: string) {
+  const conflict = await this.bookingRepository.findOne({
+    where: [
+      {
+        field: { id: fieldId },
+        bookingDate: date,
+        status: Not('CANCELLED'),
+        startTime: LessThan(end),
+        endTime: MoreThan(start),
+      },
+    ],
+  });
 
-  update(id: number, updateBookingDto: UpdateBookingDto) {
-    return `This action updates a #${id} booking`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} booking`;
+  return { available: !conflict };
   }
 }

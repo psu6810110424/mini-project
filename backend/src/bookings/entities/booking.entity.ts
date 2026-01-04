@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, CreateDateColumn } from 'typeorm';
 import { User } from '../../users/entities/user.entity';
 import { Field } from '../../fields/entities/field.entity';
 
@@ -7,18 +7,27 @@ export class Booking {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: 'timestamp' })
-  startTime: Date;
+  @Column({ type: 'date' })
+  bookingDate: string;
 
-  @Column({ type: 'timestamp' })
-  endTime: Date;
+  @Column({ type: 'time' })
+  startTime: string;
 
-  @Column({ default: 'PENDING' }) // PENDING, CONFIRMED, CANCELLED
+  @Column({ type: 'time' })
+  endTime: string;
+
+  @Column({ default: 'PENDING' }) 
   status: string;
 
-  @ManyToOne(() => User, (user) => user.bookings)
+  @Column({ type: 'decimal', precision: 10, scale: 2 })
+  totalPrice: number;
+
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @ManyToOne(() => User, (user) => user.id)
   user: User;
 
-  @ManyToOne(() => Field, (field) => field.bookings)
+  @ManyToOne(() => Field, (field) => field.id)
   field: Field;
 }

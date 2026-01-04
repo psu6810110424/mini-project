@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 import { useNavigate } from 'react-router-dom';
-import { Trophy, Clock,} from 'lucide-react'; // อย่าลืม npm install lucide-react
+import { Trophy, Clock } from 'lucide-react'; 
 import type { Field } from '../interfaces/types'; 
 
 const Home: React.FC = () => {
@@ -11,7 +11,6 @@ const Home: React.FC = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // แจ้งเตือน Toast เมื่อ Login สำเร็จ
     const isLoginSuccess = localStorage.getItem('login_success');
     if (isLoginSuccess === 'true') {
       const Toast = Swal.mixin({
@@ -36,44 +35,104 @@ const Home: React.FC = () => {
     fetchFields();
   }, []);
 
-  // --- Logic การจองคงเดิมตามที่คุณเขียนไว้ ---
   const handleBooking = (field: Field) => {
     Swal.fire({
-      title: 'ยืนยันการจองสนาม',
-      text: `คุณต้องการจอง ${field.name} ใช่หรือไม่?`,
-      icon: 'question',
+      title: `จองสนาม: ${field.name}`,
+      html: `
+        <div style="text-align: left; font-family: 'Inter', sans-serif; padding: 10px;">
+          <label style="display:block; margin-bottom:8px; font-weight:600; color: #1e293b;">1. เลือกวันที่ต้องการ:</label>
+          <input type="date" id="bookingDate" class="swal2-input" style="width: 100%; margin: 0 0 20px 0;" min="${new Date().toISOString().split('T')[0]}">
+          
+          <div style="display: flex; gap: 15px;">
+            <div style="flex: 1;">
+              <label style="display:block; margin-bottom:8px; font-weight:600; color: #1e293b;">2. เวลาเริ่ม:</label>
+              <select id="startTime" class="swal2-input" style="width: 100%; margin: 0;">
+                ${Array.from({ length: 15 }, (_, i) => i + 8).map(h => `<option value="${h.toString().padStart(2, '0')}:00">${h}:00</option>`).join('')}
+              </select>
+            </div>
+            <div style="flex: 1;">
+              <label style="display:block; margin-bottom:8px; font-weight:600; color: #1e293b;">3. เวลาสิ้นสุด:</label>
+              <select id="endTime" class="swal2-input" style="width: 100%; margin: 0;">
+                ${Array.from({ length: 15 }, (_, i) => i + 9).map(h => `<option value="${h.toString().padStart(2, '0')}:00">${h}:00</option>`).join('')}
+              </select>
+            </div>
+          </div>
+          <p style="margin-top: 15px; font-size: 0.85rem; color: #64748b;">* ราคาสนาม ฿${field.pricePerHour} / ชั่วโมง</p>
+        </div>
+      `,
+      focusConfirm: false,
       showCancelButton: true,
+      confirmButtonText: 'ตรวจสอบสถานะ',
+      cancelButtonText: 'ยกเลิก',
       confirmButtonColor: '#2563eb',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'จองเลย!',
-      cancelButtonText: 'ยกเลิก'
-    }).then((result) => { if (result.isConfirmed) choosePaymentMethod(field); });
-  };
+      preConfirm: () => {
+        const date = (document.getElementById('bookingDate') as HTMLInputElement).value;
+        const start = (document.getElementById('startTime') as HTMLSelectElement).value;
+        const end = (document.getElementById('endTime') as HTMLSelectElement).value;
 
-  const choosePaymentMethod = (field: Field) => {
-    Swal.fire({
-      title: 'เลือกวิธีการชำระเงิน',
-      input: 'radio',
-      inputOptions: { 'promptpay': 'PromptPay (QR Code)', 'credit': 'บัตรเครดิต/เดบิต', 'cash': 'ชำระที่หน้าสนาม' },
-      inputValidator: (value) => { if (!value) return 'กรุณาเลือกช่องทางชำระเงิน!'; },
-      confirmButtonText: 'ถัดไป',
-      confirmButtonColor: '#10b981',
-      showCancelButton: true,
+        if (!date || !start || !end) {
+          Swal.showValidationMessage('กรุณากรอกข้อมูลให้ครบถ้วน');
+          return false;
+        }
+        
+        const startH = parseInt(start.split(':')[0]);
+        const endH = parseInt(end.split(':')[0]);
+
+        if (startH >= endH) {
+          Swal.showValidationMessage('เวลาเริ่มต้องน้อยกว่าเวลาสิ้นสุด');
+          return false;
+        }
+
+        return { bookingDate: date, startTime: start, endTime: end, hours: endH - startH };
+      }
     }).then((result) => {
       if (result.isConfirmed) {
-        Swal.fire({
-            title: 'กำลังพาไปหน้าชำระเงิน',
-            timer: 800,
-            showConfirmButton: false,
-            didOpen: () => { Swal.showLoading(); }
-        }).then(() => { navigate('/payment', { state: { field: field, method: result.value } }); });
+        processBooking(field, result.value);
       }
     });
   };
 
+  const processBooking = async (field: Field, bookingData: any) => {
+    try {
+      Swal.fire({ title: 'กำลังตรวจสอบเวลาว่าง...', didOpen: () => Swal.showLoading(), allowOutsideClick: false });
+
+      const checkRes = await axios.get(`http://localhost:3000/bookings/check`, {
+        params: {
+          fieldId: field.id,
+          date: bookingData.bookingDate,
+          start: bookingData.startTime,
+          end: bookingData.endTime
+        }
+      });
+
+      if (checkRes.data.available) {
+        const totalPrice = bookingData.hours * field.pricePerHour;
+        
+        Swal.fire({
+          icon: 'success',
+          title: 'สนามว่างสำหรับคุณ!',
+          text: `ระยะเวลา ${bookingData.hours} ชม. รวมเป็นเงิน ฿${totalPrice}`,
+          confirmButtonText: 'ไปหน้าชำระเงิน',
+          confirmButtonColor: '#10b981',
+        }).then(() => {
+          navigate('/payment', { 
+            state: { 
+              field, 
+              bookingData: { ...bookingData, totalPrice } 
+            } 
+          });
+        });
+      } else {
+        Swal.fire('ขออภัย!', 'สนามนี้มีคนจองในช่วงเวลาดังกล่าวแล้ว', 'error');
+      }
+    } catch (error) {
+      console.error(error);
+      Swal.fire('ผิดพลาด', 'ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้', 'error');
+    }
+  };
+
   return (
     <div style={{ backgroundColor: '#f8fafc', minHeight: '100vh' }}>
-      {/* Hero Section: แยกออกจากส่วนรายการสนามชัดเจน */}
       <div style={{ 
         background: 'linear-gradient(135deg, #1e293b 0%, #0f172a 100%)', 
         color: 'white', 
@@ -89,7 +148,6 @@ const Home: React.FC = () => {
         </p>
       </div>
 
-      {/* Content Section */}
       <div style={{ maxWidth: '1200px', margin: '-50px auto 50px', padding: '0 20px' }}>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))', gap: '30px' }}>
           {fields.map((field) => (
@@ -106,7 +164,7 @@ const Home: React.FC = () => {
                   <Trophy size={24} color="#2563eb" />
                 </div>
                 <span style={{ color: '#10b981', fontWeight: 'bold', fontSize: '0.9rem', backgroundColor: '#f0fdf4', padding: '5px 12px', borderRadius: '20px' }}>
-                  ว่างวันนี้
+                  พร้อมจอง
                 </span>
               </div>
               
@@ -118,9 +176,9 @@ const Home: React.FC = () => {
               {token ? (
                 <button 
                   onClick={() => handleBooking(field)} 
-                  style={{ width: '100%', backgroundColor: '#2563eb', color: 'white', padding: '14px', borderRadius: '15px', border: 'none', cursor: 'pointer', fontWeight: 'bold', fontSize: '1rem', boxShadow: '0 4px 6px -1px rgba(37, 99, 235, 0.2)' }}
+                  style={{ width: '100%', backgroundColor: '#2563eb', color: 'white', padding: '14px', borderRadius: '15px', border: 'none', cursor: 'pointer', fontWeight: 'bold', fontSize: '1rem' }}
                 >
-                  จองสนามตอนนี้
+                  เลือกเวลาและจองสนาม
                 </button>
               ) : (
                 <button 

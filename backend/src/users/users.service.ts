@@ -21,7 +21,8 @@ export class UsersService {
   }
 
   async findOneByUsername(username: string): Promise<User | null> { 
-    return this.usersRepository.findOne({ where: { username } }); 
+    const user = await this.usersRepository.findOne({ where: { username } });
+    return user;
   }
 
   async findOne(id: number): Promise<User | null> {

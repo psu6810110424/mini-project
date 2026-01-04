@@ -3,74 +3,76 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom'; 
 import type { AuthResponse } from '../interfaces/types';
 import Swal from 'sweetalert2';
+import { Eye, EyeOff, Lock, User as UserIcon } from 'lucide-react';
 
 const Login: React.FC = () => {
   const [username, setUsername] = useState<string>('');
   const [password, setPassword] = useState<string>('');
+  const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate(); 
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const response = await axios.post<AuthResponse>('http://localhost:3000/auth/login', {
-        username,
-        password,
-      });
-
+      const response = await axios.post<AuthResponse>('http://localhost:3000/auth/login', { username, password });
       if (response.data.user.role === 'ADMIN') {
-        Swal.fire({
-          icon: 'warning',
-          title: 'เข้าสู่ระบบไม่ได้',
-          text: 'บัญชีนี้เป็น Admin กรุณาเข้าใช้งานผ่านหน้า Admin Login เท่านั้น',
-          confirmButtonColor: '#111827',
-        });
+        Swal.fire({ icon: 'warning', title: 'ไม่อนุญาต', text: 'บัญชี Admin กรุณาล็อกอินผ่านหน้า Admin' });
         return;
       }
-
       localStorage.setItem('token', response.data.access_token);
       localStorage.setItem('user_role', response.data.user.role);
       localStorage.setItem('login_success', 'true'); 
-
-      Swal.fire({
-        icon: 'success',
-        title: 'Login Success!',
-        text: 'กำลังพาคุณไปยังหน้าหลัก...',
-        showConfirmButton: false,
-        timer: 1500,
-        timerProgressBar: true,
-      }).then(() => {
+      Swal.fire({ icon: 'success', title: 'สำเร็จ!', showConfirmButton: false, timer: 1500 }).then(() => {
         navigate('/'); 
         window.location.reload();
       });
-      
     } catch (error) {
-      Swal.fire({
-        icon: 'error',
-        title: 'Login Failed',
-        text: 'ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง',
-        confirmButtonColor: '#111827',
-      });
+      Swal.fire({ icon: 'error', title: 'ล้มเหลว', text: 'ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง' });
     }
   };
 
+  const inputWrapperStyle: React.CSSProperties = {
+    position: 'relative',
+    display: 'flex',
+    alignItems: 'center',
+    width: '100%', 
+  };
+
+  const inputStyle: React.CSSProperties = {
+    width: '100%',
+    padding: '12px 40px 12px 40px', 
+    borderRadius: '12px',
+    border: '1px solid #e2e8f0',
+    outline: 'none',
+    boxSizing: 'border-box', 
+  };
+
   return (
-    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '80vh', backgroundColor: '#f3f4f6' }}>
-      <div style={{ backgroundColor: 'white', padding: '40px', borderRadius: '16px', boxShadow: '0 10px 25px -5px rgba(0,0,0,0.1)', width: '100%', maxWidth: '400px' }}>
-        <h2 style={{ textAlign: 'center', color: '#111827', marginBottom: '30px', fontSize: '1.8rem' }}>เข้าสู่ระบบ</h2>
+    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh', backgroundColor: '#f8fafc' }}>
+      <div style={{ backgroundColor: 'white', padding: '40px', borderRadius: '24px', boxShadow: '0 20px 25px -5px rgba(0,0,0,0.1)', width: '100%', maxWidth: '400px' }}>
+        <h2 style={{ textAlign: 'center', color: '#1e293b', marginBottom: '30px', fontWeight: '800' }}>เข้าสู่ระบบ</h2>
         <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
           <div>
-            <label style={{ display: 'block', marginBottom: '8px', color: '#374151', fontSize: '0.9rem' }}>ชื่อผู้ใช้งาน</label>
-            <input type="text" style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid #d1d5db', outline: 'none' }} onChange={(e) => setUsername(e.target.value)} placeholder="Enter your username" />
+            <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600' }}>ชื่อผู้ใช้งาน</label>
+            <div style={inputWrapperStyle}>
+              <UserIcon size={18} style={{ position: 'absolute', left: '12px', color: '#94a3b8' }} />
+              <input type="text" style={inputStyle} onChange={(e) => setUsername(e.target.value)} placeholder="Username" required />
+            </div>
           </div>
+
           <div>
-            <label style={{ display: 'block', marginBottom: '8px', color: '#374151', fontSize: '0.9rem' }}>รหัสผ่าน</label>
-            <input type="password" style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid #d1d5db', outline: 'none' }} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" />
+            <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600' }}>รหัสผ่าน</label>
+            <div style={inputWrapperStyle}>
+              <Lock size={18} style={{ position: 'absolute', left: '12px', color: '#94a3b8' }} />
+              <input type={showPassword ? "text" : "password"} style={inputStyle} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" required />
+              <button type="button" onClick={() => setShowPassword(!showPassword)} style={{ position: 'absolute', right: '12px', background: 'none', border: 'none', cursor: 'pointer', color: '#94a3b8', display: 'flex', alignItems: 'center' }}>
+                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+              </button>
+            </div>
           </div>
-          <button type="submit" style={{ backgroundColor: '#111827', color: 'white', padding: '12px', borderRadius: '8px', border: 'none', fontWeight: 'bold', cursor: 'pointer', marginTop: '10px' }}>Login</button>
+
+          <button type="submit" style={{ backgroundColor: '#2563eb', color: 'white', padding: '14px', borderRadius: '12px', border: 'none', fontWeight: 'bold', cursor: 'pointer', marginTop: '10px' }}>Login</button>
         </form>
-        <p style={{ textAlign: 'center', marginTop: '20px', color: '#6b7280', fontSize: '0.85rem' }}>
-          ยังไม่มีบัญชี? <a href="/register" style={{ color: '#2563eb', textDecoration: 'none' }}>สมัครสมาชิก</a>
-        </p>
       </div>
     </div>
   );

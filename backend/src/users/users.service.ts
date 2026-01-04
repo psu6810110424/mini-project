@@ -11,7 +11,7 @@ export class UsersService {
     private usersRepository: Repository<User>,
   ) {}
   
-  async create(userData: Partial<User>): Promise<User> {
+  async create(userData: Partial<User>) {
     const newUser = this.usersRepository.create(userData);
     return await this.usersRepository.save(newUser);
   }
@@ -20,8 +20,8 @@ export class UsersService {
     return `This action returns all users`;
   }
 
-  async findOneByUsername(username: string): Promise<User | null> {
-    return await this.usersRepository.findOne({ where: { username } });
+  async findOneByUsername(username: string): Promise<User | null> { 
+    return this.usersRepository.findOne({ where: { username } }); 
   }
 
   async findOne(id: number): Promise<User | null> {

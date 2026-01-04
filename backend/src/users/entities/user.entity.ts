@@ -10,9 +10,9 @@ export class User {
   username: string;
 
   @Column()
-  password: string; // เดี๋ยวเราจะ Hash ตัวนี้
+  password: string; 
 
-  @Column({ default: 'USER' }) // ADMIN หรือ USER
+  @Column({ default: 'USER' }) 
   role: string;
 
   @OneToMany(() => Booking, (booking) => booking.user)

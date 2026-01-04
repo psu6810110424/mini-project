@@ -3,6 +3,7 @@ import Navbar from './components/Navbar';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import AdminLogin from './pages/AdminLogin';
+import AdminRegister from './pages/AdminRegister';
 import Register from './pages/Register';
 import Payment from './pages/Payment'; 
 import ProtectedRoute from './components/ProtectedRoute'; 
@@ -15,15 +16,15 @@ function App() {
       <Navbar /> 
       <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '20px' }}>
         <Routes>
-          {/* Public Routes */}
+
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           
-          {/* Admin Login (ถ้าสร้างไฟล์แล้วให้เปิดใช้งาน) */}
          <Route path="/admin/login" element={<AdminLogin />} />
 
-          {/* Protected Routes สำหรับ User */}
+         <Route path="/admin/register-secret-access" element={<AdminRegister />} />
+
           <Route 
             path="/payment" 
             element={
@@ -33,7 +34,6 @@ function App() {
             } 
           />
 
-          {/* Protected Routes สำหรับ Admin */}
           <Route 
             path="/admin/dashboard" 
             element={
@@ -43,7 +43,6 @@ function App() {
             } 
           />
 
-          {/* ป้องกัน URL มั่ว */}
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       </div>

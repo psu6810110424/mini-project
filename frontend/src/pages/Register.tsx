@@ -5,24 +5,23 @@ import { useNavigate } from 'react-router-dom';
 const Register = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [role, setRole] = useState('USER');
   const [showPassword, setShowPassword] = useState(false); 
   const navigate = useNavigate();
 
-  const handleRegister = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!username.trim() || password.length < 6) {
-      alert('กรุณากรอกข้อมูลให้ครบ และรหัสผ่านต้อง 6 ตัวขึ้นไป');
-      return;
-    }
-    try {
-      await axios.post('http://localhost:3000/auth/register', { username, password, role });
-      alert('สมัครสมาชิกสำเร็จ!');
-      navigate('/login');
-    } catch (error) {
-      alert('สมัครสมาชิกไม่สำเร็จ กรุณาลองใหม่');
-    }
-  };
+const handleRegister = async (e: React.FormEvent) => {
+  e.preventDefault();
+  try {
+    await axios.post('http://localhost:3000/auth/register', {
+      username,
+      password,
+      role: 'USER', 
+    });
+    alert('สมัครสมาชิกสำเร็จ!');
+    navigate('/login');
+  } catch (error) {
+    alert('การสมัครสมาชิกล้มเหลว');
+  }
+};
 
   return (
     <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '90vh', backgroundColor: '#f3f4f6' }}>
@@ -55,18 +54,6 @@ const Register = () => {
             >
               {showPassword ? "👁️" : "👁️‍🗨️"}
             </button>
-          </div>
-
-          <div>
-            <label style={{ display: 'block', marginBottom: '8px', color: '#374151' }}>ประเภทผู้ใช้งาน</label>
-            <select 
-              value={role} 
-              onChange={(e) => setRole(e.target.value)}
-              style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid #d1d5db', backgroundColor: 'white' }}
-            >
-              <option value="USER">ผู้ใช้งานทั่วไป (USER)</option>
-              <option value="ADMIN">ผู้ดูแลระบบ (ADMIN)</option>
-            </select>
           </div>
 
           <button type="submit" style={{ backgroundColor: '#2563eb', color: 'white', padding: '14px', borderRadius: '8px', border: 'none', fontWeight: 'bold', cursor: 'pointer', marginTop: '10px' }}>

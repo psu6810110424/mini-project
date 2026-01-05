@@ -16,4 +16,8 @@ export class CreateBookingDto {
   @IsString()
   @IsNotEmpty()
   endTime: string;
+
+  @IsNumber()
+  @IsNotEmpty()
+  totalPrice: number; // Added totalPrice
 }

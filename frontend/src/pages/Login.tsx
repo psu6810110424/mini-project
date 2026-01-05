@@ -11,25 +11,46 @@ const Login: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate(); 
 
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-      const response = await axios.post<AuthResponse>('http://localhost:3000/auth/login', { username, password });
-      if (response.data.user.role === 'ADMIN') {
-        Swal.fire({ icon: 'warning', title: 'ไม่อนุญาต', text: 'บัญชี Admin กรุณาล็อกอินผ่านหน้า Admin' });
-        return;
-      }
-      localStorage.setItem('token', response.data.access_token);
-      localStorage.setItem('user_role', response.data.user.role);
-      localStorage.setItem('login_success', 'true'); 
-      Swal.fire({ icon: 'success', title: 'สำเร็จ!', showConfirmButton: false, timer: 1500 }).then(() => {
-        navigate('/'); 
-        window.location.reload();
-      });
-    } catch (error) {
-      Swal.fire({ icon: 'error', title: 'ล้มเหลว', text: 'ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง' });
+const handleLogin = async (e: React.FormEvent) => {
+  e.preventDefault();
+  try {
+    const response = await axios.post<AuthResponse>('http://localhost:3000/auth/login', { username, password });
+
+    if (response.data.user.role === 'ADMIN') {
+      Swal.fire({ icon: 'warning', title: 'ไม่อนุญาต', text: 'บัญชี Admin กรุณาล็อกอินผ่านหน้า Admin' });
+      return;
     }
-  };
+
+    const token = response.data.access_token || (response.data as any).token;
+
+    if (!token) {
+      console.error("Login Error: Token not found in response data", response.data);
+      Swal.fire({ icon: 'error', title: 'เกิดข้อผิดพลาด', text: 'ระบบไม่สามารถรับรหัสยืนยันตัวตนได้' });
+      return;
+    }
+
+    localStorage.setItem('token', token);
+    localStorage.setItem('user_role', response.data.user.role);
+    localStorage.setItem('login_success', 'true'); 
+
+    Swal.fire({ 
+      icon: 'success', 
+      title: 'สำเร็จ!', 
+      showConfirmButton: false, 
+      timer: 1500 
+    }).then(() => {
+      navigate('/'); 
+      window.location.reload();
+    });
+  } catch (error: any) {
+    console.error("Login Axios Error:", error.response?.data);
+    Swal.fire({ 
+      icon: 'error', 
+      title: 'ล้มเหลว', 
+      text: error.response?.data?.message || 'ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง' 
+    });
+  }
+};
 
   const inputWrapperStyle: React.CSSProperties = {
     position: 'relative',

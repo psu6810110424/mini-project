@@ -23,19 +23,23 @@ export class AuthService {
   }
 
   async login(username: string, pass: string) {
-    const user = await this.usersService.findOneByUsername(username);
+  const user = await this.usersService.findOneByUsername(username);
+  
+  if (user && (await bcrypt.compare(pass, user.password))) {
+    console.log("User ID during login:", user.id); 
+
     
-    if (user && (await bcrypt.compare(pass, user.password))) {
-      const payload = { username: user.username, sub: user.id, role: user.role };
-      return {
-        access_token: this.jwtService.sign(payload),
-        user: {
-          id: user.id,
-          username: user.username,
-          role: user.role
-        }
-      };
-    }
-    throw new UnauthorizedException('ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง');
+  const payload = { 
+  username: user.username, 
+  sub: Number(user.id), 
+  role: user.role 
+};
+    
+    return {
+      access_token: this.jwtService.sign(payload),
+      user: { id: user.id, username: user.username, role: user.role } 
+    };
   }
+  throw new UnauthorizedException('ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง');
+}
 }

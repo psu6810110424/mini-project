@@ -7,6 +7,7 @@ import AdminRegister from './pages/AdminRegister';
 import Register from './pages/Register';
 import Payment from './pages/Payment'; 
 import ProtectedRoute from './components/ProtectedRoute'; 
+import MyBookings from './pages/MyBookings';
 
 const AdminDashboard = () => (
   <div style={{ textAlign: 'center', padding: '50px' }}>
@@ -18,7 +19,6 @@ const AdminDashboard = () => (
 const AppContent = () => {
   const location = useLocation();
   
-  // รายการ Path ที่ต้องการซ่อน Navbar และต้องการให้การจัดวางเป็นแบบเต็มจอ
   const authPaths = [
     '/login', 
     '/register', 
@@ -75,7 +75,15 @@ const AppContent = () => {
               </ProtectedRoute>
             } 
           />
-
+          {/* My Bookings Route */}
+          <Route 
+            path="/my-bookings" 
+            element={
+            <ProtectedRoute allowedRole="USER">
+              <MyBookings />
+            </ProtectedRoute>
+            } 
+          />
           {/* Fallback Route */}
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>

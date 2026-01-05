@@ -8,8 +8,10 @@ import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
+    // 1. โหลด Config เป็นอันดับแรก
     ConfigModule.forRoot({ isGlobal: true }),
     
+    // 2. ตั้งค่า Database
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
@@ -26,12 +28,10 @@ import { AuthModule } from './auth/auth.module';
     }),
     
     UsersModule,
-    
     FieldsModule,
-    
     BookingsModule,
-    
     AuthModule,
   ],
 })
+// *** ตรวจสอบบรรทัดนี้ ต้องมีคำว่า export ***
 export class AppModule {}

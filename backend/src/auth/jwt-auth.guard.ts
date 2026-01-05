@@ -1,4 +1,4 @@
-import { CanActivate, ExecutionContext, Injectable, UnauthorizedException,} from '@nestjs/common';
+import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
 
@@ -11,19 +11,29 @@ export class JwtAuthGuard implements CanActivate {
     const token = this.extractTokenFromHeader(request);
 
     if (!token) {
+      console.warn('[JwtAuthGuard] No token in header');
       throw new UnauthorizedException('ไม่พบ Token ใน Header');
     }
 
     try {
-      const payload = await this.jwtService.verifyAsync(token, {
-        secret: 'YOUR_SECRET_KEY', 
-      });
+      // Use JwtService configured by JwtModule - no hardcoded secret
+      console.log('[JwtAuthGuard] verifying token:', token?.slice(0, 20) + '...');
+      const payload: any = await this.jwtService.verifyAsync(token);
+      console.log('[JwtAuthGuard] token payload:', payload);
 
-      request['user'] = payload;
-    } catch {
+      // Normalize payload to include `id` so controllers can use `req.user.id`
+      const user = {
+        id: payload.sub ?? payload.id,
+        username: payload.username,
+        role: payload.role ?? payload.roles,
+      };
+
+      request['user'] = user;
+    } catch (err) {
+      console.error('[JwtAuthGuard] token verify error:', err?.message || err);
       throw new UnauthorizedException('Token ไม่ถูกต้องหรือหมดอายุ');
     }
-    
+
     return true;
   }
 

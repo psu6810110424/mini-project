@@ -6,8 +6,10 @@ import { CreditCard, QrCode, Banknote, Calendar, Clock, ArrowLeft } from 'lucide
 const Payment = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  // ดึงข้อมูลที่ส่งมาจากหน้า Home
   const { field, method, bookingData } = location.state || {}; 
 
+  // ถ้าไม่มีข้อมูล ให้เด้งกลับหน้าหลัก
   if (!field || !bookingData) {
     return (
       <div style={{ textAlign: 'center', padding: '100px' }}>
@@ -21,28 +23,50 @@ const Payment = () => {
 
   const handleConfirmPayment = async () => {
     try {
-      Swal.fire({ title: 'กำลังบันทึกการจอง...', didOpen: () => Swal.showLoading(), allowOutsideClick: false });
-
       const token = localStorage.getItem('token');
+      if (!token) {
+        Swal.fire('Session expired', 'Please log in again.', 'error');
+        navigate('/login');
+        return;
+      }
+
+      Swal.fire({ 
+        title: 'กำลังบันทึกการจอง...', 
+        allowOutsideClick: false, 
+        didOpen: () => { Swal.showLoading(); } 
+      });
+
       await axios.post('http://localhost:3000/bookings', {
-        fieldId: field.id,
+        fieldId: Number(field.id),
         bookingDate: bookingData.bookingDate,
         startTime: bookingData.startTime,
         endTime: bookingData.endTime,
-        totalPrice: bookingData.totalPrice
+        totalPrice: Number(bookingData.totalPrice),
       }, {
-        headers: { Authorization: `Bearer ${token}` }
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       });
 
       Swal.fire({
         icon: 'success',
-        title: 'ชำระเงินสำเร็จ!',
+        title: 'จองสนามสำเร็จ!',
         text: 'เราได้รับข้อมูลการจองของคุณเรียบร้อยแล้ว',
         confirmButtonColor: '#10b981',
-      }).then(() => navigate('/'));
-      
-    } catch (error) {
-      Swal.fire('เกิดข้อผิดพลาด', 'ไม่สามารถบันทึกการจองได้ กรุณาลองใหม่อีกครั้ง', 'error');
+      }).then(() => navigate('/my-bookings'));
+
+    } catch (error: any) {
+      console.error("Payment Error Response:", error.response);
+
+      if (error.response?.status === 401) {
+        Swal.fire('เซสชันหมดอายุ', 'รหัสยืนยันตัวตนไม่ถูกต้องหรือหมดอายุ กรุณาล็อกอินใหม่อีกครั้ง', 'error')
+          .then(() => {
+            localStorage.removeItem('token');
+            navigate('/login');
+          });
+      } else {
+        Swal.fire('เกิดข้อผิดพลาด', error.response?.data?.message || 'ไม่สามารถบันทึกการจองได้', 'error');
+      }
     }
   };
 
@@ -56,7 +80,6 @@ const Payment = () => {
 
         <h2 style={{ textAlign: 'center', marginBottom: '30px', color: '#1e293b' }}>ยืนยันการชำระเงิน</h2>
 
-        {/* ส่วนสรุปรายละเอียด */}
         <div style={{ backgroundColor: '#f8fafc', padding: '20px', borderRadius: '16px', marginBottom: '25px', border: '1px solid #e2e8f0' }}>
           <h4 style={{ margin: '0 0 15px 0', color: '#2563eb' }}>{field.name}</h4>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', fontSize: '0.95rem', color: '#475569' }}>
@@ -73,17 +96,15 @@ const Payment = () => {
           <hr style={{ border: 'none', borderTop: '1px dashed #cbd5e1', margin: '15px 0' }} />
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <span style={{ fontWeight: '600' }}>ยอดชำระทั้งสิ้น</span>
-            <span style={{ fontSize: '1.5rem', fontWeight: '800', color: '#1e293b' }}>฿{bookingData.totalPrice}</span>
+            <span style={{ fontSize: '1.5rem', fontWeight: '800', color: '#1e293b' }}>฿{Number(bookingData.totalPrice).toLocaleString()}</span>
           </div>
         </div>
 
-        {/* ส่วนแสดงหน้าจอตามวิธีชำระเงิน */}
         <div style={{ textAlign: 'center', marginBottom: '30px' }}>
           {method === 'promptpay' && (
             <div>
               <p style={{ fontSize: '0.85rem', color: '#64748b', marginBottom: '10px' }}>สแกน QR Code เพื่อชำระเงิน</p>
               <div style={{ padding: '20px', border: '1px solid #e2e8f0', borderRadius: '12px', display: 'inline-block', backgroundColor: '#fff' }}>
-                 {/* จำลองรูป QR Code */}
                  <QrCode size={180} color="#1e293b" />
               </div>
               <p style={{ marginTop: '10px', fontWeight: '700', color: '#00467F' }}>PromptPay</p>

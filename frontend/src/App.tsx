@@ -1,5 +1,4 @@
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
-import Navbar from './components/Navbar';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import AdminLogin from './pages/AdminLogin';
@@ -10,8 +9,9 @@ import Payment from './pages/Payment';
 import ProtectedRoute from './components/ProtectedRoute'; 
 import MyBookings from './pages/MyBookings';
 
-// NOTE: `AdminDashboard` is imported from pages and contains the full admin UI.
-
+// ---------------------------------------------------------
+// 1. ส่วนการจัดการเส้นทางภายใน (App Content Logic)
+// ---------------------------------------------------------
 const AppContent = () => {
   const location = useLocation();
   
@@ -26,61 +26,35 @@ const AppContent = () => {
 
   return (
     <>
-      {/* 1. แสดง Navbar เฉพาะหน้าที่ไม่ใช่หน้า Auth */}
-      {!isAuthPage && <Navbar />} 
       
       <main style={
         isAuthPage 
-          ? { 
-              minHeight: '100vh', 
-              backgroundColor: '#f3f4f6', // สีพื้นหลังเฉพาะหน้า Login/Register ให้ดูสะอาดตา
-              display: 'flex',
-              flexDirection: 'column'
-            } 
-          : { 
-              maxWidth: '1200px', 
-              margin: '0 auto', 
-              padding: '20px', 
-              minHeight: '80vh' 
-            } 
+          ? { minHeight: '100vh', backgroundColor: '#f3f4f6', display: 'flex', flexDirection: 'column' } 
+          : { minHeight: '80vh' } // ลบ maxWidth ออกเพื่อให้หน้า Home แสดงผลได้เต็มตา
       }>
         <Routes>
-          {/* Public Routes */}
+          {/* 2. Public Routes */}
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/admin/login" element={<AdminLogin />} />
           <Route path="/admin/register-secret-access" element={<AdminRegister />} />
 
-          {/* User Protected Routes */}
+          {/* 3. Protected Routes (User & Admin) */}
           <Route 
             path="/payment" 
-            element={
-              <ProtectedRoute allowedRole="USER">
-                <Payment />
-              </ProtectedRoute>
-            } 
+            element={<ProtectedRoute allowedRole="USER"><Payment /></ProtectedRoute>} 
           />
-
-          {/* Admin Protected Routes */}
           <Route 
             path="/admin/dashboard" 
-            element={
-              <ProtectedRoute allowedRole="ADMIN">
-                <AdminDashboard />
-              </ProtectedRoute>
-            } 
+            element={<ProtectedRoute allowedRole="ADMIN"><AdminDashboard /></ProtectedRoute>} 
           />
-          {/* My Bookings Route */}
           <Route 
             path="/my-bookings" 
-            element={
-            <ProtectedRoute allowedRole="USER">
-              <MyBookings />
-            </ProtectedRoute>
-            } 
+            element={<ProtectedRoute allowedRole="USER"><MyBookings /></ProtectedRoute>} 
           />
-          {/* Fallback Route */}
+
+          {/* 4. Fallback Route */}
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       </main>
@@ -88,6 +62,9 @@ const AppContent = () => {
   );
 };
 
+// ---------------------------------------------------------
+// 2. ส่วนโครงสร้างหลักของแอป (Main Entry)
+// ---------------------------------------------------------
 function App() {
   return (
     <Router>

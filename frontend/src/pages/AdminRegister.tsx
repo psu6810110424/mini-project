@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import Swal from 'sweetalert2';
 
 const AdminRegister: React.FC = () => {
   const [username, setUsername] = useState<string>('');
@@ -15,14 +16,14 @@ const AdminRegister: React.FC = () => {
         password,
         role: 'ADMIN', 
       });
-      alert('สร้างบัญชีผู้ดูแลระบบสำเร็จ!');
+      await Swal.fire({ title: 'สำเร็จ', text: 'สร้างบัญชีผู้ดูแลระบบสำเร็จ!', icon: 'success', confirmButtonColor: '#10b981' });
       // Save admin credentials locally so we can prefill admin login later.
       try {
         localStorage.setItem('saved_admin_credentials', JSON.stringify({ username, password }));
       } catch (e) { /* ignore storage errors */ }
       navigate('/admin/login'); 
     } catch (error) {
-      alert('ไม่สามารถสร้างบัญชี Admin ได้ (Username นี้อาจมีผู้ใช้แล้ว)');
+      await Swal.fire({ title: 'ผิดพลาด', text: 'ไม่สามารถสร้างบัญชี Admin ได้ (Username นี้อาจมีผู้ใช้แล้ว)', icon: 'error', confirmButtonColor: '#d33' });
     }
   };
 

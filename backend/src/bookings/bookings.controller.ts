@@ -59,7 +59,7 @@ export class BookingsController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Delete('admin/:id') // สร้าง Route สำหรับการลบ
+  @Delete('admin/:id') 
   async remove(@Param('id') id: string, @Request() req) {
     if (req.user.role !== 'ADMIN') throw new UnauthorizedException('เฉพาะ Admin เท่านั้น');
     return this.bookingsService.remove(+id);

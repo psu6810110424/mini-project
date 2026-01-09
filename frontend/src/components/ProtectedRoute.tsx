@@ -1,5 +1,6 @@
 import React from 'react';
 import { Navigate } from 'react-router-dom';
+import Swal from 'sweetalert2';
 import { type UserRole } from '../interfaces/types';
 
 interface ProtectedRouteProps {
@@ -17,9 +18,14 @@ const ProtectedRoute = ({ children, allowedRole }: ProtectedRouteProps) => {
   }
 
   if (userRole !== allowedRole) {
-    // Normalize and be explicit in feedback/redirect to avoid confusing users when casing differs
-    // Only show alert for authorized users who lack this role
-    alert('คุณไม่มีสิทธิ์เข้าถึงหน้านี้!');
+    Swal.fire({
+      title: 'การเข้าถึงถูกปฏิเสธ',
+      text: 'คุณไม่มีสิทธิ์เข้าถึงหน้านี้',
+      icon: 'error',
+      confirmButtonColor: '#3085d6',
+      background: '#ffffff',
+      borderRadius: 12
+    });
     return <Navigate to={userRole === 'ADMIN' ? '/admin/dashboard' : '/'} replace />;
   }
 

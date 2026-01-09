@@ -36,7 +36,12 @@ const AdminLogin: React.FC = () => {
       });
 
       if (response.data.user.role !== 'ADMIN') {
-        alert('บัญชีนี้ไม่มีสิทธิ์เข้าถึงส่วนของเจ้าหน้าที่');
+        await Swal.fire({
+          title: 'การเข้าถึงถูกปฏิเสธ',
+          text: 'บัญชีนี้ไม่มีสิทธิ์เข้าถึงส่วนของเจ้าหน้าที่',
+          icon: 'error',
+          confirmButtonColor: '#3085d6'
+        });
         return;
       }
 
@@ -57,7 +62,12 @@ const AdminLogin: React.FC = () => {
       navigate('/admin/dashboard');
       window.location.reload();
     } catch (error) {
-      alert('Admin Username หรือ Password ไม่ถูกต้อง');
+      await Swal.fire({
+        title: 'ผิดพลาด',
+        text: 'Admin Username หรือ Password ไม่ถูกต้อง',
+        icon: 'error',
+        confirmButtonColor: '#d33'
+      });
     }
   };
 

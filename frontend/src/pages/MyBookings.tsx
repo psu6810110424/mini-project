@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 import { useNavigate } from 'react-router-dom';
-import { Calendar, Clock, ChevronDown, ChevronUp, ArrowLeft, Trash2 } from 'lucide-react'; 
+import { Calendar, Clock, ChevronDown, ChevronUp, ArrowLeft } from 'lucide-react'; 
 
 const MyBookings = () => {
   const [bookings, setBookings] = useState<any[]>([]);

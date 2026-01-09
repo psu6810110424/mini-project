@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 import { useNavigate } from 'react-router-dom';
-import { CheckCircle, Trash2, ArrowLeft, } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 
 const AdminDashboard = () => {
   const [allBookings, setAllBookings] = useState<any[]>([]);

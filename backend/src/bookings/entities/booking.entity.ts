@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, CreateDateColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, CreateDateColumn ,JoinColumn } from 'typeorm';
 import { User } from '../../users/entities/user.entity';
 import { Field } from '../../fields/entities/field.entity';
 
@@ -25,9 +25,9 @@ export class Booking {
   @CreateDateColumn()
   createdAt: Date;
 
-  @ManyToOne(() => User, (user) => user.id)
-  user: User;
-
-  @ManyToOne(() => Field, (field) => field.id)
+  @ManyToOne(() => Field, (field) => field.bookings, { onDelete: 'CASCADE' }) 
   field: Field;
+
+  @ManyToOne(() => User, (user) => user.bookings)
+  user: User;
 }

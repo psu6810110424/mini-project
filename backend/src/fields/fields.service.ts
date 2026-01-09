@@ -3,7 +3,6 @@ import { UpdateFieldDto } from './dto/update-field.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Field } from './entities/field.entity';  
-import { CreateFieldDto } from './dto/create-field.dto';
 
 @Injectable()
 export class FieldsService {
@@ -12,11 +11,15 @@ export class FieldsService {
     private fieldsRepository: Repository<Field>,
   ) {}
 
- async create(createFieldDto: any) {
-    const newField = this.fieldsRepository.create(createFieldDto);
-    return await this.fieldsRepository.save(newField); 
-  }
+  // เพิ่มฟังก์ชันสร้างและลบ
+async create(data: any) {
+  const newField = this.fieldsRepository.create(data);
+  return await this.fieldsRepository.save(newField);
+}
 
+async remove(id: number) {
+  return await this.fieldsRepository.delete(id);
+}
   async findAll() {
   return await this.fieldsRepository.find(); 
 }
@@ -29,7 +32,4 @@ export class FieldsService {
     return `This action updates a #${id} field`;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} field`;
-  }
 }

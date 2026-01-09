@@ -23,21 +23,24 @@ const Home = () => {
     window.location.reload();
   };
 
-  const fetchFields = useCallback(async () => {
-    setLoading(true);
-    try {
-      const response = await axios.get('http://localhost:3000/fields');
-      setFields(Array.isArray(response.data) ? response.data : []);
-    } catch (error) {
-      console.error('Error fetching fields:', error);
-    } finally {
-      setTimeout(() => setLoading(false), 600); 
-    }
-  }, []);
+    const fetchFields = useCallback(async () => {
+      setLoading(true);
+      try {
+        const response = await axios.get('http://localhost:3000/fields');
+        if (response.data) {
+          setFields(Array.isArray(response.data) ? response.data : []);
+        }
+      } catch (error) {
+        console.error('Error fetching fields:', error);
+        setFields([]); 
+      } finally {
+        setLoading(false);
+      }
+    }, []);
 
-  useEffect(() => {
-    fetchFields();
-  }, [fetchFields]);
+    useEffect(() => {
+      fetchFields();
+    }, [fetchFields]);
 
   const processBooking = async (field: Field, bookingData: any) => {
     try {
@@ -130,48 +133,68 @@ const Home = () => {
           <div style={{ fontSize: '1.6rem', fontWeight: 900, cursor: 'pointer', letterSpacing: '-1.5px', marginRight: '50px' }} onClick={() => navigate('/')}>
             SPORT<span style={{ color: '#0066FF' }}>RESERVE</span>
           </div>
-
-          <div style={{ display: 'flex', gap: '35px', alignItems: 'center' }}>
-            <span style={{ cursor: 'pointer', color: '#0066FF', fontWeight: 'bold' }}>Home</span>
-            <span style={{ cursor: 'pointer', opacity: 0.8 }}>Football</span>
-            <span style={{ cursor: 'pointer', opacity: 0.8 }}>Badminton</span>
-          </div>
-
-          <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '20px' }}>
-            {token ? (
-              <>
-                {role === 'ADMIN' && (
-                  <button 
-                    onClick={() => navigate('/admin-dashboard')}
-                    style={{ backgroundColor: '#10b981', color: 'white', padding: '8px 18px', borderRadius: '25px', border: 'none', cursor: 'pointer', fontWeight: 600, fontSize: '0.85rem' }}
+            
+            <div style={{ display: 'flex', gap: '35px', alignItems: 'center' }}>
+              <span style={{ cursor: 'pointer', color: '#0066FF', fontWeight: 'bold' }}>Home</span>
+              <span style={{ cursor: 'pointer', opacity: 0.8 }}>Football</span>
+              <span style={{ cursor: 'pointer', opacity: 0.8 }}>Badminton</span>
+            </div>
+            
+            <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '20px' }}>
+              {token ? (
+                <>
+                  {role === 'ADMIN' && (
+                    <button 
+                      onClick={() => navigate('/admin/dashboard')} // 👈 ต้องตรงกับ Path ใน App.tsx
+                      style={{ 
+                        backgroundColor: '#10b981', 
+                        color: 'white', 
+                        padding: '8px 18px', 
+                        borderRadius: '25px', 
+                        border: 'none', 
+                        cursor: 'pointer', 
+                        fontWeight: 600, 
+                        fontSize: '0.85rem',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '8px'
+                      }}
+                    >
+                      🛡️ จัดการระบบ
+                    </button>
+                  )}
+                  <span 
+                    onClick={() => navigate('/my-bookings')} 
+                    style={{ cursor: 'pointer', fontSize: '0.9rem', color: '#94a3b8', display: 'flex', alignItems: 'center', gap: '5px' }}
                   >
-                    🛡️ จัดการระบบ
+                    <ListOrdered size={16} /> ประวัติการจอง
+                  </span>
+                  <button 
+                    onClick={handleLogout} 
+                    style={{ backgroundColor: 'rgba(239, 68, 68, 0.1)', border: '1px solid #ef4444', color: '#ef4444', padding: '6px 18px', borderRadius: '25px', cursor: 'pointer', fontSize: '0.85rem', fontWeight: 600 }}
+                  >
+                    <LogOut size={16} style={{ marginRight: '5px' }} /> ออกจากระบบ
                   </button>
-                )}
-                <span 
-                  onClick={() => navigate('/my-bookings')} 
-                  style={{ cursor: 'pointer', fontSize: '0.9rem', color: '#94a3b8', display: 'flex', alignItems: 'center', gap: '5px' }}
-                >
-                  <ListOrdered size={16} /> ประวัติการจอง
-                </span>
-                <button 
-                  onClick={handleLogout} 
-                  style={{ backgroundColor: 'rgba(239, 68, 68, 0.1)', border: '1px solid #ef4444', color: '#ef4444', padding: '6px 18px', borderRadius: '25px', cursor: 'pointer', fontSize: '0.85rem', fontWeight: 600 }}
-                >
-                  <LogOut size={16} style={{ marginRight: '5px' }} /> ออกจากระบบ
-                </button>
-              </>
-            ) : (
-              <button 
-                onClick={() => navigate('/login')}
-                style={{ backgroundColor: '#0066FF', color: 'white', padding: '10px 25px', borderRadius: '25px', border: 'none', cursor: 'pointer', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '8px' }}
-              >
-                <User size={18} /> เข้าสู่ระบบ
-              </button>
-            )}
+                </>
+              ) : (
+                <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+                  <button 
+                    onClick={() => navigate('/login')}
+                    style={{ background: 'none', border: 'none', color: 'white', cursor: 'pointer', fontWeight: 'bold', fontSize: '0.9rem' }}
+                  >
+                    เข้าสู่ระบบ
+                  </button>
+                  <button 
+                    onClick={() => navigate('/register')}
+                    style={{ backgroundColor: '#0066FF', color: 'white', padding: '10px 25px', borderRadius: '25px', border: 'none', cursor: 'pointer', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '8px' }}
+                  >
+                    <User size={18} /> สมัครสมาชิก
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
-        </div>
-      </nav>
+        </nav>
 
       {/* 3.2 ส่วนแนะนำ (Hero Section) */}
       <header style={{ background: '#2d3748', padding: '60px 20px', textAlign: 'center', color: 'white' }}>

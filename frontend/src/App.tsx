@@ -30,7 +30,7 @@ const AppContent = () => {
       <main style={
         isAuthPage 
           ? { minHeight: '100vh', backgroundColor: '#f3f4f6', display: 'flex', flexDirection: 'column' } 
-          : { minHeight: '80vh' } // ลบ maxWidth ออกเพื่อให้หน้า Home แสดงผลได้เต็มตา
+          : { minHeight: '80vh' } 
       }>
         <Routes>
           {/* 2. Public Routes */}
@@ -39,6 +39,7 @@ const AppContent = () => {
           <Route path="/register" element={<Register />} />
           <Route path="/admin/login" element={<AdminLogin />} />
           <Route path="/admin/register-secret-access" element={<AdminRegister />} />
+          <Route path="/admin/dashboard" element={<ProtectedRoute allowedRole="ADMIN"><AdminDashboard /></ProtectedRoute>} />
 
           {/* 3. Protected Routes (User & Admin) */}
           <Route 

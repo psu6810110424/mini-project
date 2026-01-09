@@ -4,17 +4,13 @@ import Home from './pages/Home';
 import Login from './pages/Login';
 import AdminLogin from './pages/AdminLogin';
 import AdminRegister from './pages/AdminRegister';
+import AdminDashboard from './pages/AdminDashboard';
 import Register from './pages/Register';
 import Payment from './pages/Payment'; 
 import ProtectedRoute from './components/ProtectedRoute'; 
 import MyBookings from './pages/MyBookings';
 
-const AdminDashboard = () => (
-  <div style={{ textAlign: 'center', padding: '50px' }}>
-    <h1>Admin Management System</h1>
-    <p>เฉพาะ Admin เท่านั้นที่เห็นหน้านี้</p>
-  </div>
-);
+// NOTE: `AdminDashboard` is imported from pages and contains the full admin UI.
 
 const AppContent = () => {
   const location = useLocation();

@@ -96,4 +96,9 @@ export class BookingsService {
     await this.bookingRepository.update(id, { status });
     return this.findOne(id);
   }
+
+  async remove(id: number) {
+    const booking = await this.findOne(id); // ตรวจสอบว่ามีอยู่จริงไหม
+    return await this.bookingRepository.remove(booking);
+  }
 }

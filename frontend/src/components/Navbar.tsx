@@ -3,36 +3,42 @@ import { Link, useNavigate } from 'react-router-dom';
 const Navbar: React.FC = () => {
   const navigate = useNavigate();
   const token = localStorage.getItem('token');
-  
+  const userRole = localStorage.getItem('user_role');
+
   const handleLogout = () => {
     localStorage.removeItem('token');
+    localStorage.removeItem('user_role');
     navigate('/login');
+    window.location.reload();
   };
 
-return (
-    <nav style={{ 
-      display: 'flex', justifyContent: 'space-between', alignItems: 'center', 
-      padding: '15px 40px', backgroundColor: '#ffffff', borderBottom: '1px solid #e5e7eb',
-      position: 'sticky', top: 0, zIndex: 100
+  return (
+    <nav style={{
+      display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+      padding: '12px 28px', backgroundColor: '#0f172a', color: 'white', position: 'sticky', top: 0, zIndex: 1000,
+      borderBottom: '3px solid rgba(255,255,255,0.03)'
     }}>
-      <div style={{ fontSize: '1.5rem', fontWeight: '800', color: '#2563eb', letterSpacing: '-1px' }}>
-        SPORT<span style={{ color: '#111827' }}>RESERVE</span>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+        <div style={{ fontSize: '1.25rem', fontWeight: 800, color: 'white', cursor: 'pointer' }} onClick={() => navigate('/') }>
+          SPORT<span style={{ color: '#3b82f6' }}>RESERVE</span>
+        </div>
       </div>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
-        <Link to="/" style={{ textDecoration: 'none', color: '#4b5563', fontWeight: '500' }}>หน้าแรก</Link>
-        {!token ? (
+
+      <div style={{ display: 'flex', alignItems: 'center', gap: 18 }}>
+        <Link to="/" style={{ textDecoration: 'none', color: '#94a3b8', fontWeight: 600 }}>ประวัติการจอง</Link>
+        {token ? (
           <>
-            <Link to="/login" style={{ textDecoration: 'none', color: '#4b5563', fontWeight: '500' }}>เข้าสู่ระบบ</Link>
-            <Link to="/register" style={{ 
-              textDecoration: 'none', backgroundColor: '#111827', color: 'white', 
-              padding: '8px 18px', borderRadius: '6px', fontWeight: '500' 
-            }}>สมัครสมาชิก</Link>
+            <button onClick={() => navigate('/my-bookings')} style={{ background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer' }}>ประวัติการจอง</button>
+            <button onClick={handleLogout} style={{ backgroundColor: 'rgba(239,68,68,0.12)', color: '#ef4444', padding: '8px 12px', borderRadius: 8, border: '1px solid rgba(239,68,68,0.2)', cursor: 'pointer' }}>ออกจากระบบ</button>
+            {token && userRole === 'ADMIN' && (
+              <button onClick={() => navigate('/admin/dashboard')} style={{ backgroundColor: '#10b981', color: 'white', padding: '8px 12px', borderRadius: 8, border: 'none', cursor: 'pointer' }}>Admin Panel</button>
+            )}
           </>
         ) : (
-          <button onClick={handleLogout} style={{ 
-            backgroundColor: 'transparent', border: '1px solid #d1d5db', padding: '8px 15px', 
-            borderRadius: '6px', cursor: 'pointer', fontWeight: '500' 
-          }}>ออกจากระบบ</button>
+          <>
+            <Link to="/login" style={{ textDecoration: 'none', color: '#94a3b8' }}>เข้าสู่ระบบ</Link>
+            <Link to="/register" style={{ textDecoration: 'none', backgroundColor: '#3b82f6', color: 'white', padding: '8px 14px', borderRadius: 8 }}>สมัครสมาชิก</Link>
+          </>
         )}
       </div>
     </nav>

@@ -1,4 +1,4 @@
-import { Controller, Post, Body, UseGuards, Request, Get, Param, Query, UnauthorizedException, Patch, BadRequestException } from '@nestjs/common';
+import { Controller, Post, Body, UseGuards, Request, Get, Param, Query, UnauthorizedException, Patch, BadRequestException, Delete } from '@nestjs/common';
 import { BookingsService } from './bookings.service';
 import { CreateBookingDto } from './dto/create-booking.dto';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
@@ -56,6 +56,13 @@ export class BookingsController {
   async updateStatus(@Param('id') id: string, @Body('status') status: string, @Request() req) {
     if (req.user.role !== 'ADMIN') throw new UnauthorizedException('เฉพาะ Admin เท่านั้น');
     return this.bookingsService.updateStatus(+id, status);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Delete('admin/:id') // สร้าง Route สำหรับการลบ
+  async remove(@Param('id') id: string, @Request() req) {
+    if (req.user.role !== 'ADMIN') throw new UnauthorizedException('เฉพาะ Admin เท่านั้น');
+    return this.bookingsService.remove(+id);
   }
 
   @Get(':id')

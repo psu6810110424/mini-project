@@ -1,0 +1,61 @@
+/* Global styles added by assistant */
+@import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600;800&display=swap');
+
+/* 1. ปรับพื้นหลังและฟอนต์หลัก */
+body {
+	background-color: #f8f9fa; /* สีเทาอ่อนสะอาดตา */
+	color: #333333; /* สีตัวอักษรเทาเข้ม อ่านง่าย */
+	font-family: 'Kanit', sans-serif; /* แนะนำให้ใช้ฟอนต์ Kanit จะดูทันสมัยมาก */
+	margin: 0;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+
+/* 2. สร้าง Card สำหรับใส่เนื้อหา/ตาราง */
+.container-card {
+	background: #ffffff;
+	border-radius: 12px; /* มุมโค้ง */
+	box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05); /* เงาบางๆ ให้ดูมีมิติ */
+	padding: 20px;
+	margin: 20px auto;
+}
+
+/* 3. ปรับแต่งตารางให้ดูโปร่ง */
+table {
+	width: 100%;
+	border-collapse: collapse;
+	background: white;
+}
+
+th {
+	background-color: #f1f3f5; /* สีหัวตารางอ่อนๆ */
+	color: #495057;
+	padding: 15px;
+	border-bottom: 2px solid #dee2e6;
+	text-align: left;
+}
+
+td {
+	padding: 12px 15px;
+	border-bottom: 1px solid #eee; /* เส้นแบ่งบางๆ */
+}
+
+/* 4. ปุ่มสไตล์ Modern */
+.btn-primary {
+	background-color: #007bff; /* สีน้ำเงินเข้ม */
+	border: none;
+	border-radius: 8px;
+	padding: 10px 20px;
+	transition: all 0.3s;
+	color: white;
+	cursor: pointer;
+}
+
+.btn-primary:hover {
+	background-color: #0056b3;
+	transform: translateY(-2px); /* เวลากดแล้วปุ่มจะลอยขึ้นนิดนึง */
+}
+
+/* Utility spacing */
+.page-wrapper { max-width: 1200px; margin: 0 auto; padding: 20px; }
+

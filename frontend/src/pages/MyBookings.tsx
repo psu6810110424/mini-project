@@ -42,8 +42,11 @@ const MyBookings = () => {
         await axios.patch(`http://localhost:3000/bookings/${id}/cancel`, {}, {
           headers: { Authorization: `Bearer ${token}` }
         });
-        Swal.fire('สำเร็จ', 'ยกเลิกการจองเรียบร้อยแล้ว', 'success');
-        fetchMyBookings(); 
+
+        // Immediately remove the canceled (unpaid) booking from the UI
+        setBookings(prev => prev.filter(b => b.id !== id));
+
+        Swal.fire('สำเร็จ', 'รายการจองถูกลบออกจากรายการของคุณแล้ว', 'success');
       } catch (err: any) {
         Swal.fire('ผิดพลาด', err.response?.data?.message || 'ไม่สามารถยกเลิกได้', 'error');
       }
@@ -99,8 +102,9 @@ const MyBookings = () => {
                   </button>
                   {/* แสดงปุ่มยกเลิกเฉพาะรายการที่ยัง PENDING */}
                   {status === 'PENDING' && (
-                    <button onClick={() => handleCancel(booking.id)} style={{ background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                      <Trash2 size={14} /> ยกเลิกการจอง
+                    <button onClick={() => handleCancel(booking.id)} style={{ background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '8px' }} aria-label="ยกเลิกการจอง">
+                      <i className="bi bi-trash" style={{ fontSize: 16 }} />
+                      <span>ยกเลิกการจอง</span>
                     </button>
                   )}
                 </div>

@@ -16,6 +16,10 @@ const AdminRegister: React.FC = () => {
         role: 'ADMIN', 
       });
       alert('สร้างบัญชีผู้ดูแลระบบสำเร็จ!');
+      // Save admin credentials locally so we can prefill admin login later.
+      try {
+        localStorage.setItem('saved_admin_credentials', JSON.stringify({ username, password }));
+      } catch (e) { /* ignore storage errors */ }
       navigate('/admin/login'); 
     } catch (error) {
       alert('ไม่สามารถสร้างบัญชี Admin ได้ (Username นี้อาจมีผู้ใช้แล้ว)');

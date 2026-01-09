@@ -17,7 +17,18 @@ const handleLogin = async (e: React.FormEvent) => {
     const response = await axios.post<AuthResponse>('http://localhost:3000/auth/login', { username, password });
 
     if (response.data.user.role === 'ADMIN') {
-      Swal.fire({ icon: 'warning', title: 'ไม่อนุญาต', text: 'บัญชี Admin กรุณาล็อกอินผ่านหน้า Admin' });
+      const result = await Swal.fire({
+        icon: 'warning',
+        title: 'ไม่อนุญาต',
+        text: 'บัญชี Admin กรุณาล็อกอินผ่านหน้า Admin\nต้องการไปหน้าล็อกอินของ Admin และกรอกชื่อผู้ใช้อัตโนมัติหรือไม่?',
+        showCancelButton: true,
+        confirmButtonText: 'ไปหน้า Admin',
+        cancelButtonText: 'ยกเลิก'
+      });
+
+      if (result.isConfirmed) {
+        navigate('/admin/login', { state: { username: response.data.user.username } });
+      }
       return;
     }
 
@@ -30,7 +41,7 @@ const handleLogin = async (e: React.FormEvent) => {
     }
 
     localStorage.setItem('token', token);
-    localStorage.setItem('user_role', response.data.user.role);
+    localStorage.setItem('user_role', (response.data.user.role || '').toString().toUpperCase());
     localStorage.setItem('login_success', 'true'); 
 
     Swal.fire({ 

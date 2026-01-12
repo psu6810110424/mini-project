@@ -24,7 +24,6 @@ const ProtectedRoute = ({ children, allowedRole }: ProtectedRouteProps) => {
       icon: 'error',
       confirmButtonColor: '#3085d6',
       background: '#ffffff',
-      borderRadius: 12
     });
     return <Navigate to={userRole === 'ADMIN' ? '/admin/dashboard' : '/'} replace />;
   }

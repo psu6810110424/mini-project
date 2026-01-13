@@ -3,6 +3,7 @@ import { Booking } from '../../bookings/entities/booking.entity';
 
 @Entity()
 export class User {
+  
   @PrimaryGeneratedColumn()
   id: number;
 

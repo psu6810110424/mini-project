@@ -10,6 +10,7 @@ import { JwtAuthGuard } from './jwt-auth.guard';
 @Module({
   imports: [
     UsersModule,
+    
     JwtModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
@@ -19,6 +20,7 @@ import { JwtAuthGuard } from './jwt-auth.guard';
       }),
     }),
   ],
+
   providers: [AuthService, JwtStrategy, JwtAuthGuard],
   controllers: [AuthController],
   exports: [AuthService, JwtModule, JwtStrategy, JwtAuthGuard], 

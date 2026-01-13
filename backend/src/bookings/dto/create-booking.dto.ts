@@ -1,6 +1,7 @@
 import { IsNotEmpty, IsDateString, IsString, IsNumber } from 'class-validator';
 
 export class CreateBookingDto {
+  
   @IsNumber()
   @IsNotEmpty()
   fieldId: number;
@@ -19,5 +20,5 @@ export class CreateBookingDto {
 
   @IsNumber()
   @IsNotEmpty()
-  totalPrice: number; // Added totalPrice
+  totalPrice: number; 
 }

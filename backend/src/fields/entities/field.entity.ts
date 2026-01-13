@@ -3,11 +3,15 @@ import { Booking } from '../../bookings/entities/booking.entity';
 
 @Entity()
 export class Field {
+  
   @PrimaryGeneratedColumn()
   id: number;
 
   @Column()
   name: string;
+  
+    @Column({ default: 'Football' }) 
+  type: string; 
 
   @Column()
   pricePerHour: number;

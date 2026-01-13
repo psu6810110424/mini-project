@@ -9,25 +9,41 @@ const AdminRegister: React.FC = () => {
   const navigate = useNavigate();
 
   const handleAdminRegister = async (e: React.FormEvent) => {
-    e.preventDefault();
+    e.preventDefault(); 
+    
     try {
       await axios.post('http://localhost:3000/auth/register', {
         username,
         password,
         role: 'ADMIN', 
       });
-      await Swal.fire({ title: 'สำเร็จ', text: 'สร้างบัญชีผู้ดูแลระบบสำเร็จ!', icon: 'success', confirmButtonColor: '#10b981' });
-      // Save admin credentials locally so we can prefill admin login later.
+
+      await Swal.fire({ 
+        title: 'สำเร็จ', 
+        text: 'สร้างบัญชีผู้ดูแลระบบสำเร็จ!', 
+        icon: 'success', 
+        confirmButtonColor: '#10b981' 
+      });
+
       try {
         localStorage.setItem('saved_admin_credentials', JSON.stringify({ username, password }));
-      } catch (e) { /* ignore storage errors */ }
+      } catch (e) { 
+      }
+
       navigate('/admin/login'); 
+
     } catch (error) {
-      await Swal.fire({ title: 'ผิดพลาด', text: 'ไม่สามารถสร้างบัญชี Admin ได้ (Username นี้อาจมีผู้ใช้แล้ว)', icon: 'error', confirmButtonColor: '#d33' });
+      await Swal.fire({ 
+        title: 'ผิดพลาด', 
+        text: 'ไม่สามารถสร้างบัญชี Admin ได้ (Username นี้อาจมีผู้ใช้แล้ว)', 
+        icon: 'error', 
+        confirmButtonColor: '#d33' 
+      });
     }
   };
 
   return (
+    
     <div style={{ 
       display: 'flex', justifyContent: 'center', alignItems: 'center', 
       minHeight: '80vh', backgroundColor: '#111827' 
@@ -44,6 +60,7 @@ const AdminRegister: React.FC = () => {
         </p>
 
         <form onSubmit={handleAdminRegister} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+          
           <div>
             <label style={{ display: 'block', marginBottom: '8px' }}>Admin Username</label>
             <input 
@@ -54,6 +71,7 @@ const AdminRegister: React.FC = () => {
               required
             />
           </div>
+
           <div>
             <label style={{ display: 'block', marginBottom: '8px' }}>Password</label>
             <input 
@@ -64,6 +82,7 @@ const AdminRegister: React.FC = () => {
               required
             />
           </div>
+
           <button type="submit" style={{ 
             backgroundColor: '#ef4444', color: 'white', padding: '12px', 
             borderRadius: '8px', border: 'none', fontWeight: 'bold', cursor: 'pointer' 

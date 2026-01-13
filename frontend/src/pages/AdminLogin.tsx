@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
-import { useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import { type AuthResponse } from '../interfaces/types';
 
@@ -15,7 +14,6 @@ const AdminLogin: React.FC = () => {
     const prefilled = (location.state as any)?.username as string | undefined;
     if (prefilled) setUsername(prefilled);
 
-    // Try to load saved admin credentials from localStorage (if previously saved by AdminRegister)
     try {
       const saved = localStorage.getItem('saved_admin_credentials');
       if (saved) {
@@ -24,7 +22,8 @@ const AdminLogin: React.FC = () => {
           setPassword(obj.password);
         }
       }
-    } catch (e) { /* ignore parse errors */ }
+    } catch (e) { 
+    }
   }, [location.state]);
 
   const handleAdminLogin = async (e: React.FormEvent) => {
@@ -56,11 +55,11 @@ const AdminLogin: React.FC = () => {
         color: '#ffffff',
         confirmButtonColor: '#7c3aed',
         confirmButtonText: 'ตกลง',
-        showCloseButton: false,
       });
 
       navigate('/admin/dashboard');
       window.location.reload();
+
     } catch (error) {
       await Swal.fire({
         title: 'ผิดพลาด',
@@ -92,6 +91,7 @@ const AdminLogin: React.FC = () => {
             <label style={{ display: 'block', marginBottom: '8px', fontSize: '0.9rem' }}>Admin Username</label>
             <input 
               type="text" 
+              value={username} 
               style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid #d1d5db' }}
               onChange={(e) => setUsername(e.target.value)} 
               placeholder="Username"
@@ -102,6 +102,7 @@ const AdminLogin: React.FC = () => {
             <label style={{ display: 'block', marginBottom: '8px', fontSize: '0.9rem' }}>Password</label>
             <input 
               type="password" 
+              value={password} 
               style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid #d1d5db' }}
               onChange={(e) => setPassword(e.target.value)} 
               placeholder="••••••••"

@@ -6,21 +6,22 @@ import { ConfigService } from '@nestjs/config';
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(configService: ConfigService) {
-    const secret = configService.get<string>('JWT_SECRET') || 'defaultSecret'; // Fallback to default value
+    const secret = configService.get<string>('JWT_SECRET') || 'defaultSecret'; 
+    
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-      ignoreExpiration: false, // Reject expired tokens
-      secretOrKey: secret, // Ensure secret is always a valid string
+      ignoreExpiration: false, 
+      secretOrKey: secret, 
     });
   }
 
   async validate(payload: any) {
     if (!payload.sub || !payload.username) {
-      throw new UnauthorizedException('Invalid token payload');
+      throw new UnauthorizedException('ข้อมูลใน Token ไม่ถูกต้อง');
     }
 
     return {
-      id: Number(payload.sub),
+      id: Number(payload.sub), 
       username: payload.username,
       role: payload.role,
     };

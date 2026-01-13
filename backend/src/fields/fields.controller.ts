@@ -8,9 +8,6 @@ import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 export class FieldsController {
   constructor(private readonly fieldsService: FieldsService) {}
 
-  // ------------------------------
-  // 1. ส่วนการเพิ่มสนาม (เฉพาะ ADMIN)
-  // ------------------------------
   @UseGuards(JwtAuthGuard)
   @Post()
   async createField(@Body() data: any, @Request() req: any) { 
@@ -18,19 +15,11 @@ export class FieldsController {
     return this.fieldsService.create(data);
   }
 
-  // -----------------------------
-  // 2. ส่วนการลบสนาม (เฉพาะ ADMIN)
-  // -----------------------------
   @UseGuards(JwtAuthGuard)
   @Delete(':id')
   async deleteField(@Param('id') id: string, @Request() req: any) { 
     if (req.user.role !== 'ADMIN') throw new UnauthorizedException('เฉพาะ Admin เท่านั้น');
     return this.fieldsService.remove(+id);
-  }
-
-  @Post()
-  create(@Body() createFieldDto: CreateFieldDto) {
-    return this.fieldsService.create(createFieldDto);
   }
 
   @Get()
@@ -41,6 +30,11 @@ export class FieldsController {
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.fieldsService.findOne(+id);
+  }
+
+  @Post()
+  create(@Body() createFieldDto: CreateFieldDto) {
+    return this.fieldsService.create(createFieldDto);
   }
 
   @Patch(':id')

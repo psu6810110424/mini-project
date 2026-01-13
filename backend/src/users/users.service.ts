@@ -4,7 +4,7 @@ import { User } from './entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
-@Injectable()
+@Injectable() 
 export class UsersService {
   constructor(
     @InjectRepository(User) 
@@ -36,5 +36,4 @@ export class UsersService {
   remove(id: number) {
     return `This action removes a #${id} user`;
   }
-
 }

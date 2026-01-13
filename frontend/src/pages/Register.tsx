@@ -7,28 +7,45 @@ import { Eye, EyeOff, CheckCircle2, XCircle, ShieldCheck } from 'lucide-react';
 const Register: React.FC = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
+  const [showPassword, setShowPassword] = useState(false); 
   const navigate = useNavigate();
-
-  const [validations, setValidations] = useState({ length: false, upper: false, number: false });
+  const [validations, setValidations] = useState({ 
+    length: false, 
+    upper: false,  
+    number: false  
+  });
 
   useEffect(() => {
     setValidations({
       length: password.length >= 8,
-      upper: /[A-Z]/.test(password),
-      number: /[0-9]/.test(password),
+      upper: /[A-Z]/.test(password), 
+      number: /[0-9]/.test(password), 
     });
   }, [password]);
-
   const isPasswordSecure = Object.values(validations).every(Boolean);
-
   const handleRegister = async (e: React.FormEvent) => {
-    e.preventDefault();
+    e.preventDefault(); 
+    
     try {
-      await axios.post('http://localhost:3000/auth/register', { username, password, role: 'USER' });
-      Swal.fire({ icon: 'success', title: 'สมัครสำเร็จ!', showConfirmButton: false, timer: 1500 }).then(() => navigate('/login'));
+      await axios.post('http://localhost:3000/auth/register', { 
+        username, 
+        password, 
+        role: 'USER' 
+      });
+
+      Swal.fire({ 
+        icon: 'success', 
+        title: 'สมัครสำเร็จ!', 
+        showConfirmButton: false, 
+        timer: 1500 
+      }).then(() => navigate('/login')); 
+
     } catch (err) {
-      Swal.fire({ icon: 'error', title: 'ล้มเหลว', text: 'ชื่อผู้ใช้นี้มีคนใช้แล้ว' });
+      Swal.fire({ 
+        icon: 'error', 
+        title: 'ล้มเหลว', 
+        text: 'ชื่อผู้ใช้นี้มีคนใช้แล้ว' 
+      });
     }
   };
 
@@ -49,20 +66,35 @@ const Register: React.FC = () => {
         <form onSubmit={handleRegister} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
           <div>
             <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600' }}>ชื่อผู้ใช้งาน</label>
-            <input type="text" style={inputStyle} onChange={(e) => setUsername(e.target.value)} placeholder="Username" required />
+            <input 
+              type="text" 
+              style={inputStyle} 
+              onChange={(e) => setUsername(e.target.value)} 
+              placeholder="Username" 
+              required 
+            />
           </div>
 
           <div style={{ position: 'relative' }}>
             <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600' }}>รหัสผ่าน</label>
             <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
-              <input type={showPassword ? "text" : "password"} style={inputStyle} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" required />
-              <button type="button" onClick={() => setShowPassword(!showPassword)} style={{ position: 'absolute', right: '12px', background: 'none', border: 'none', cursor: 'pointer', color: '#94a3b8' }}>
+              <input 
+                type={showPassword ? "text" : "password"} 
+                style={inputStyle} 
+                onChange={(e) => setPassword(e.target.value)} 
+                placeholder="••••••••" 
+                required 
+              />
+              <button 
+                type="button" 
+                onClick={() => setShowPassword(!showPassword)} 
+                style={{ position: 'absolute', right: '12px', background: 'none', border: 'none', cursor: 'pointer', color: '#94a3b8' }}
+              >
                 {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
               </button>
             </div>
           </div>
 
-          {/* Checklist Box */}
           <div style={{ backgroundColor: '#f9fafb', padding: '15px', borderRadius: '15px', border: '1px solid #f1f5f9' }}>
             <p style={{ fontSize: '0.75rem', fontWeight: '700', color: '#4b5563', marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '5px' }}>
               <ShieldCheck size={14} /> ความปลอดภัยของรหัสผ่าน:
@@ -80,7 +112,22 @@ const Register: React.FC = () => {
             </div>
           </div>
 
-          <button type="submit" disabled={!isPasswordSecure} style={{ backgroundColor: isPasswordSecure ? '#2563eb' : '#94a3b8', color: 'white', padding: '15px', borderRadius: '12px', border: 'none', fontWeight: 'bold', cursor: isPasswordSecure ? 'pointer' : 'not-allowed' }}>สมัครสมาชิก</button>
+          <button 
+            type="submit" 
+            disabled={!isPasswordSecure} 
+            style={{ 
+              backgroundColor: isPasswordSecure ? '#2563eb' : '#94a3b8', 
+              color: 'white', 
+              padding: '15px', 
+              borderRadius: '12px', 
+              border: 'none', 
+              fontWeight: 'bold', 
+              cursor: isPasswordSecure ? 'pointer' : 'not-allowed',
+              transition: 'background-color 0.3s ease' 
+            }}
+          >
+            สมัครสมาชิก
+          </button>
         </form>
       </div>
     </div>

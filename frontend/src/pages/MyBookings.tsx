@@ -8,7 +8,6 @@ const MyBookings = () => {
   const [bookings, setBookings] = useState<any[]>([]);
   const [openIds, setOpenIds] = useState<Record<string | number, boolean>>({});
   const navigate = useNavigate();
-
   const toggleOpen = (id: string | number) => {
     setOpenIds(prev => ({ ...prev, [id]: !prev[id] }));
   };
@@ -17,9 +16,11 @@ const MyBookings = () => {
     try {
       const token = localStorage.getItem('token');
       if (!token) return navigate('/login');
+
       const res = await axios.get('http://localhost:3000/bookings/my-bookings', {
         headers: { Authorization: `Bearer ${token}` }
       });
+
       setBookings(Array.isArray(res.data) ? res.data : []);
     } catch (err) {
       console.error("Error fetching bookings:", err);
@@ -43,7 +44,6 @@ const MyBookings = () => {
           headers: { Authorization: `Bearer ${token}` }
         });
 
-        // Immediately remove the canceled (unpaid) booking from the UI
         setBookings(prev => prev.filter(b => b.id !== id));
 
         Swal.fire('สำเร็จ', 'รายการจองถูกลบออกจากรายการของคุณแล้ว', 'success');
@@ -60,6 +60,7 @@ const MyBookings = () => {
   return (
     <div style={{ padding: '40px 20px', backgroundColor: '#f8fafc', minHeight: '100vh' }}>
       <div style={{ maxWidth: '800px', margin: '0 auto' }}>
+        
         <button onClick={() => navigate('/')} style={{ display: 'flex', alignItems: 'center', gap: '5px', background: 'none', border: 'none', color: '#3b82f6', cursor: 'pointer', marginBottom: '20px' }}>
           <ArrowLeft size={18} /> กลับหน้าหลัก
         </button>
@@ -92,7 +93,9 @@ const MyBookings = () => {
                     }}>
                       {status === 'PENDING' ? 'รอดำเนินการ' : status === 'CANCELLED' ? 'ยกเลิก' : 'ยืนยันแล้ว'}
                     </span>
-                    <div style={{ marginTop: '8px', fontWeight: 'bold', fontSize: '1.1rem' }}>฿{Number(booking.totalPrice).toLocaleString()}</div>
+                    <div style={{ marginTop: '8px', fontWeight: 'bold', fontSize: '1.1rem' }}>
+                      ฿{Number(booking.totalPrice).toLocaleString()}
+                    </div>
                   </div>
                 </div>
                 
@@ -100,9 +103,9 @@ const MyBookings = () => {
                   <button onClick={() => toggleOpen(booking.id)} style={{ background: 'none', border: 'none', color: '#3b82f6', cursor: 'pointer', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: 4 }}>
                     {openIds[booking.id] ? <ChevronUp size={14}/> : <ChevronDown size={14}/>} รายละเอียด
                   </button>
-                  {/* แสดงปุ่มยกเลิกเฉพาะรายการที่ยัง PENDING */}
+
                   {status === 'PENDING' && (
-                    <button onClick={() => handleCancel(booking.id)} style={{ background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '8px' }} aria-label="ยกเลิกการจอง">
+                    <button onClick={() => handleCancel(booking.id)} style={{ background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
                       <i className="bi bi-trash" style={{ fontSize: 16 }} />
                       <span>ยกเลิกการจอง</span>
                     </button>

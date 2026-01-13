@@ -2,8 +2,10 @@ import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, CreateDateColumn ,Jo
 import { User } from '../../users/entities/user.entity';
 import { Field } from '../../fields/entities/field.entity';
 
+
 @Entity()
 export class Booking {
+
   @PrimaryGeneratedColumn()
   id: number;
 

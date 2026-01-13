@@ -5,7 +5,7 @@ import { type UserRole } from '../interfaces/types';
 
 interface ProtectedRouteProps {
   children: React.ReactNode; 
-  allowedRole: UserRole;// รับค่า 'ADMIN' หรือ 'USER'
+  allowedRole: UserRole; 
 }
 
 const ProtectedRoute = ({ children, allowedRole }: ProtectedRouteProps) => {
@@ -25,10 +25,11 @@ const ProtectedRoute = ({ children, allowedRole }: ProtectedRouteProps) => {
       confirmButtonColor: '#3085d6',
       background: '#ffffff',
     });
+
     return <Navigate to={userRole === 'ADMIN' ? '/admin/dashboard' : '/'} replace />;
   }
 
-  return children;
+  return <>{children}</>;
 };
 
 export default ProtectedRoute;

@@ -6,10 +6,8 @@ import { CreditCard, QrCode, Banknote, Calendar, Clock, ArrowLeft } from 'lucide
 const Payment = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  // ดึงข้อมูลที่ส่งมาจากหน้า Home
   const { field, method, bookingData } = location.state || {}; 
 
-  // ถ้าไม่มีข้อมูล ให้เด้งกลับหน้าหลัก
   if (!field || !bookingData) {
     return (
       <div style={{ textAlign: 'center', padding: '100px' }}>
@@ -96,7 +94,9 @@ const Payment = () => {
           <hr style={{ border: 'none', borderTop: '1px dashed #cbd5e1', margin: '15px 0' }} />
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <span style={{ fontWeight: '600' }}>ยอดชำระทั้งสิ้น</span>
-            <span style={{ fontSize: '1.5rem', fontWeight: '800', color: '#1e293b' }}>฿{Number(bookingData.totalPrice).toLocaleString()}</span>
+            <span style={{ fontSize: '1.5rem', fontWeight: '800', color: '#1e293b' }}>
+              ฿{Number(bookingData.totalPrice).toLocaleString()}
+            </span>
           </div>
         </div>
 

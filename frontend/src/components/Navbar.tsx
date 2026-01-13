@@ -25,19 +25,27 @@ const Navbar: React.FC = () => {
       </div>
 
       <div style={{ display: 'flex', alignItems: 'center', gap: 18 }}>
-        <Link to="/" style={{ textDecoration: 'none', color: '#94a3b8', fontWeight: 600 }}>ประวัติการจอง</Link>
+        
         {token ? (
           <>
-            <button onClick={() => navigate('/my-bookings')} style={{ background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer' }}>ประวัติการจอง</button>
-            <button onClick={handleLogout} style={{ backgroundColor: 'rgba(239,68,68,0.12)', color: '#ef4444', padding: '8px 12px', borderRadius: 8, border: '1px solid rgba(239,68,68,0.2)', cursor: 'pointer' }}>ออกจากระบบ</button>
-            {token && userRole === 'ADMIN' && (
-              <button onClick={() => navigate('/admin/dashboard')} style={{ backgroundColor: '#10b981', color: 'white', padding: '8px 12px', borderRadius: 8, border: 'none', cursor: 'pointer' }}>Admin Panel</button>
+            <button onClick={() => navigate('/my-bookings')} style={{ background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer', fontWeight: 600 }}>
+              ประวัติการจอง
+            </button>
+            
+            <button onClick={handleLogout} style={{ backgroundColor: 'rgba(239,68,68,0.12)', color: '#ef4444', padding: '8px 12px', borderRadius: 8, border: '1px solid rgba(239,68,68,0.2)', cursor: 'pointer', fontWeight: 600 }}>
+              ออกจากระบบ
+            </button>
+
+            {userRole === 'ADMIN' && (
+              <button onClick={() => navigate('/admin/dashboard')} style={{ backgroundColor: '#10b981', color: 'white', padding: '8px 12px', borderRadius: 8, border: 'none', cursor: 'pointer', fontWeight: 600 }}>
+                Admin Panel
+              </button>
             )}
           </>
         ) : (
           <>
-            <Link to="/login" style={{ textDecoration: 'none', color: '#94a3b8' }}>เข้าสู่ระบบ</Link>
-            <Link to="/register" style={{ textDecoration: 'none', backgroundColor: '#3b82f6', color: 'white', padding: '8px 14px', borderRadius: 8 }}>สมัครสมาชิก</Link>
+            <Link to="/login" style={{ textDecoration: 'none', color: '#94a3b8', fontWeight: 600 }}>เข้าสู่ระบบ</Link>
+            <Link to="/register" style={{ textDecoration: 'none', backgroundColor: '#3b82f6', color: 'white', padding: '8px 14px', borderRadius: 8, fontWeight: 600 }}>สมัครสมาชิก</Link>
           </>
         )}
       </div>

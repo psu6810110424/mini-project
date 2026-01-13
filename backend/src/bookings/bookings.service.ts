@@ -21,8 +21,8 @@ export class BookingsService {
           field: { id: fieldId },
           bookingDate,
           status: Not('CANCELLED'),
-          startTime: LessThan(endTime),
-          endTime: MoreThan(startTime),
+          startTime: LessThan(endTime), 
+          endTime: MoreThan(startTime), 
         },
       ],
     });
@@ -60,7 +60,7 @@ export class BookingsService {
         endTime: MoreThan(start),
       },
     });
-    return { available: !conflict };
+    return { available: !conflict }; 
   }
 
   async findByUserId(userId: number) {
@@ -98,7 +98,7 @@ export class BookingsService {
   }
 
   async remove(id: number) {
-    const booking = await this.findOne(id); // ตรวจสอบว่ามีอยู่จริงไหม
+    const booking = await this.findOne(id); 
     return await this.bookingRepository.remove(booking);
   }
 }

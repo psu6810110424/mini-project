@@ -16,12 +16,11 @@ export class JwtAuthGuard implements CanActivate {
     }
 
     try {
-      // Use JwtService configured by JwtModule - no hardcoded secret
-      console.log('[JwtAuthGuard] verifying token:', token?.slice(0, 20) + '...');
+      
       const payload: any = await this.jwtService.verifyAsync(token);
+      console.log('[JwtAuthGuard] verifying token:', token?.slice(0, 20) + '...');
       console.log('[JwtAuthGuard] token payload:', payload);
 
-      // Normalize payload to include `id` so controllers can use `req.user.id`
       const user = {
         id: payload.sub ?? payload.id,
         username: payload.username,

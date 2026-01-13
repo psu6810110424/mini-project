@@ -1,26 +1,23 @@
-/* Global styles added by assistant */
 @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600;800&display=swap');
 
-/* 1. ปรับพื้นหลังและฟอนต์หลัก */
 body {
-	background-color: #f8f9fa; /* สีเทาอ่อนสะอาดตา */
-	color: #333333; /* สีตัวอักษรเทาเข้ม อ่านง่าย */
-	font-family: 'Kanit', sans-serif; /* แนะนำให้ใช้ฟอนต์ Kanit จะดูทันสมัยมาก */
+	background-color: #f8f9fa; 
+	color: #333333; 
+	font-family: 'Kanit', sans-serif; 
 	margin: 0;
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
 }
 
-/* 2. สร้าง Card สำหรับใส่เนื้อหา/ตาราง */
+
 .container-card {
 	background: #ffffff;
-	border-radius: 12px; /* มุมโค้ง */
-	box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05); /* เงาบางๆ ให้ดูมีมิติ */
+	border-radius: 12px; 
+	box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05); 
 	padding: 20px;
 	margin: 20px auto;
 }
 
-/* 3. ปรับแต่งตารางให้ดูโปร่ง */
 table {
 	width: 100%;
 	border-collapse: collapse;
@@ -28,7 +25,7 @@ table {
 }
 
 th {
-	background-color: #f1f3f5; /* สีหัวตารางอ่อนๆ */
+	background-color: #f1f3f5; 
 	color: #495057;
 	padding: 15px;
 	border-bottom: 2px solid #dee2e6;
@@ -37,12 +34,11 @@ th {
 
 td {
 	padding: 12px 15px;
-	border-bottom: 1px solid #eee; /* เส้นแบ่งบางๆ */
+	border-bottom: 1px solid #eee; 
 }
 
-/* 4. ปุ่มสไตล์ Modern */
 .btn-primary {
-	background-color: #007bff; /* สีน้ำเงินเข้ม */
+	background-color: #007bff; 
 	border: none;
 	border-radius: 8px;
 	padding: 10px 20px;
@@ -53,13 +49,13 @@ td {
 
 .btn-primary:hover {
 	background-color: #0056b3;
-	transform: translateY(-2px); /* เวลากดแล้วปุ่มจะลอยขึ้นนิดนึง */
+	transform: translateY(-2px); 
 }
 
-/* Utility spacing */
-.page-wrapper { max-width: 1200px; margin: 0 auto; padding: 20px; }
+.page-wrapper { 
+	max-width: 1200px; margin: 0 auto; padding: 20px; 
+}
 
-/* Booking card styles (modern) */
 .booking-card {
 	background: white;
 	padding: 20px;
@@ -78,7 +74,6 @@ td {
 .btn-check { background: linear-gradient(135deg,#007bff,#0056b3); color: white; border: none; padding: 12px 18px; border-radius: 10px; cursor: pointer; width:100%; }
 .btn-cancel { background: transparent; border: 1px solid #e6e6e6; padding: 10px 14px; border-radius: 10px; cursor: pointer; }
 
-/* New modern booking/payment UI */
 .booking-container { background: #ffffff; border-radius: 20px; padding: 28px; box-shadow: 0 12px 40px rgba(2,6,23,0.06); }
 .payment-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 12px; }
 .payment-method { border: 2px solid #f1f5f9; padding: 14px; border-radius: 12px; cursor: pointer; text-align: left; transition: all 0.25s ease; position: relative; }
@@ -86,19 +81,16 @@ td {
 .payment-method:hover { border-color: #bfdbfe; background: #fbfdff; transform: translateY(-4px); box-shadow: 0 12px 30px rgba(2,6,23,0.06); }
 .payment-method.selected { border-color: #3b82f6; background: linear-gradient(180deg,#f8fbff,#ffffff); box-shadow: 0 14px 40px rgba(59,130,246,0.06); }
 
-/* Field card hover and typography tweaks */
 .field-card { background-color: rgba(255,255,255,0.98); padding: 28px; border-radius: 18px; box-shadow: 0 18px 40px -12px rgba(2,6,23,0.14); border: none; transition: transform 0.32s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.32s; }
 .field-card:hover { transform: translateY(-10px); box-shadow: 0 22px 60px -18px rgba(2,6,23,0.28); }
 
 .hero-title { font-size: 3.8rem; font-weight: 900; letter-spacing: -1.5px; margin: 0 0 15px 0; }
 .hero-sub { color: #94a3b8; font-size: 1.15rem; max-width: 680px; margin: 0 auto; }
 
-/* make payment grid responsive */
 @media (max-width: 560px) {
 	.payment-grid { grid-template-columns: 1fr; }
 }
 
-/* User-provided modern booking card and button styles */
 .booking-container {
 	background: #ffffff;
 	border-radius: 20px;

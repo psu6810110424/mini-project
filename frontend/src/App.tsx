@@ -9,12 +9,8 @@ import Payment from './pages/Payment';
 import ProtectedRoute from './components/ProtectedRoute'; 
 import MyBookings from './pages/MyBookings';
 
-// ---------------------------------------------------------
-// 1. ส่วนการจัดการเส้นทางภายใน (App Content Logic)
-// ---------------------------------------------------------
 const AppContent = () => {
   const location = useLocation();
-  
   const authPaths = [
     '/login', 
     '/register', 
@@ -26,36 +22,32 @@ const AppContent = () => {
 
   return (
     <>
-      
       <main style={
         isAuthPage 
           ? { minHeight: '100vh', backgroundColor: '#f3f4f6', display: 'flex', flexDirection: 'column' } 
           : { minHeight: '80vh' } 
       }>
         <Routes>
-          {/* 2. Public Routes */}
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/admin/login" element={<AdminLogin />} />
           <Route path="/admin/register-secret-access" element={<AdminRegister />} />
-          <Route path="/admin/dashboard" element={<ProtectedRoute allowedRole="ADMIN"><AdminDashboard /></ProtectedRoute>} />
 
-          {/* 3. Protected Routes (User & Admin) */}
           <Route 
             path="/payment" 
             element={<ProtectedRoute allowedRole="USER"><Payment /></ProtectedRoute>} 
-          />
-          <Route 
-            path="/admin/dashboard" 
-            element={<ProtectedRoute allowedRole="ADMIN"><AdminDashboard /></ProtectedRoute>} 
           />
           <Route 
             path="/my-bookings" 
             element={<ProtectedRoute allowedRole="USER"><MyBookings /></ProtectedRoute>} 
           />
 
-          {/* 4. Fallback Route */}
+          <Route 
+            path="/admin/dashboard" 
+            element={<ProtectedRoute allowedRole="ADMIN"><AdminDashboard /></ProtectedRoute>} 
+          />
+
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       </main>
@@ -63,9 +55,6 @@ const AppContent = () => {
   );
 };
 
-// ---------------------------------------------------------
-// 2. ส่วนโครงสร้างหลักของแอป (Main Entry)
-// ---------------------------------------------------------
 function App() {
   return (
     <Router>

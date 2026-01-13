@@ -22,18 +22,12 @@ interface Booking {
 const MyBookings = () => {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
-  
-  // ---------------------------------------------------------
-  // 1. ตรวจสอบสิทธิ์และข้อมูลจาก LocalStorage
-  // ---------------------------------------------------------
   const token = localStorage.getItem('token');
   const role = localStorage.getItem('user_role'); // 'ADMIN' หรือ 'USER'
   const navigate = useNavigate();
 
-  // 📍 ฟังก์ชันเรียกใช้งาน SweetAlert จาก window object
   const getSwal = () => (window as any).Swal;
 
-  // 📍 โหลด SweetAlert2 ผ่าน CDN เพื่อป้องกันปัญหาการคอมไพล์
   useEffect(() => {
     const scriptId = 'sweetalert2-cdn';
     if (!document.getElementById(scriptId)) {
@@ -45,14 +39,10 @@ const MyBookings = () => {
     }
   }, []);
 
-  // ---------------------------------------------------------
-  // 2. ฟังก์ชันดึงข้อมูล (Dynamic API Call based on Role)
-  // ---------------------------------------------------------
   const fetchHistory = useCallback(async () => {
     setLoading(true);
     const Swal = getSwal();
     try {
-      // 📍 จุดสำคัญ: ถ้าเป็น Admin ให้เรียก API ตัวนึง ถ้าเป็น User ให้เรียกอีกตัวนึง
       const endpoint = role === 'ADMIN' 
         ? 'http://localhost:3000/bookings/admin/all' 
         : 'http://localhost:3000/bookings/my';
@@ -80,9 +70,6 @@ const MyBookings = () => {
     fetchHistory();
   }, [fetchHistory, token, navigate]);
 
-  // ---------------------------------------------------------
-  // 3. ฟังก์ชันช่วยตกแต่ง UI
-  // ---------------------------------------------------------
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'CONFIRMED': return { bg: '#dcfce7', text: '#15803d' };
@@ -143,7 +130,7 @@ const MyBookings = () => {
                         <Calendar size={14} /> {booking.bookingDate}
                       </span>
                     </div>
-                    {/* 📍 สำหรับ Admin: แสดงชื่อลูกค้าเพิ่ม */}
+  
                     {role === 'ADMIN' && (
                       <div style={{ marginTop: '8px', fontSize: '0.85rem', color: '#0066FF', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '5px' }}>
                         <User size={14} /> ผู้จอง: {booking.user?.username || 'ไม่ระบุชื่อ'}

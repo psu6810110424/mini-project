@@ -1,127 +1,176 @@
-import { useEffect, useState } from 'react'; 
+import { useEffect, useState, useCallback } from 'react';
 import axios from 'axios';
-import Swal from 'sweetalert2';
 import { useNavigate } from 'react-router-dom';
-import { Calendar, Clock, ChevronDown, ChevronUp, ArrowLeft } from 'lucide-react'; 
+import { Clock, Calendar, User, ChevronLeft } from 'lucide-react';
+
+interface Booking {
+  id: number;
+  bookingDate: string;
+  startTime: string;
+  endTime: string;
+  status: string;
+  totalPrice: number;
+  field: {
+    name: string;
+  };
+  user?: {
+    username: string;
+    email: string;
+  };
+}
 
 const MyBookings = () => {
-  const [bookings, setBookings] = useState<any[]>([]);
-  const [openIds, setOpenIds] = useState<Record<string | number, boolean>>({});
+  const [bookings, setBookings] = useState<Booking[]>([]);
+  const [loading, setLoading] = useState(true);
+  
+  // ---------------------------------------------------------
+  // 1. ตรวจสอบสิทธิ์และข้อมูลจาก LocalStorage
+  // ---------------------------------------------------------
+  const token = localStorage.getItem('token');
+  const role = localStorage.getItem('user_role'); // 'ADMIN' หรือ 'USER'
   const navigate = useNavigate();
-  const toggleOpen = (id: string | number) => {
-    setOpenIds(prev => ({ ...prev, [id]: !prev[id] }));
-  };
 
-  const fetchMyBookings = async () => {
-    try {
-      const token = localStorage.getItem('token');
-      if (!token) return navigate('/login');
+  // 📍 ฟังก์ชันเรียกใช้งาน SweetAlert จาก window object
+  const getSwal = () => (window as any).Swal;
 
-      const res = await axios.get('http://localhost:3000/bookings/my-bookings', {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-
-      setBookings(Array.isArray(res.data) ? res.data : []);
-    } catch (err) {
-      console.error("Error fetching bookings:", err);
-    }
-  };
-
-  const handleCancel = async (id: number) => {
-    const confirm = await Swal.fire({
-      title: 'ต้องการยกเลิกการจอง?',
-      text: "รายการนี้จะถูกเปลี่ยนสถานะเป็น ยกเลิก",
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#ef4444',
-      confirmButtonText: 'ยืนยันยกเลิก'
-    });
-
-    if (confirm.isConfirmed) {
-      try {
-        const token = localStorage.getItem('token');
-        await axios.patch(`http://localhost:3000/bookings/${id}/cancel`, {}, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-
-        setBookings(prev => prev.filter(b => b.id !== id));
-
-        Swal.fire('สำเร็จ', 'รายการจองถูกลบออกจากรายการของคุณแล้ว', 'success');
-      } catch (err: any) {
-        Swal.fire('ผิดพลาด', err.response?.data?.message || 'ไม่สามารถยกเลิกได้', 'error');
-      }
-    }
-  };
-
+  // 📍 โหลด SweetAlert2 ผ่าน CDN เพื่อป้องกันปัญหาการคอมไพล์
   useEffect(() => {
-    fetchMyBookings();
+    const scriptId = 'sweetalert2-cdn';
+    if (!document.getElementById(scriptId)) {
+      const script = document.createElement('script');
+      script.id = scriptId;
+      script.src = 'https://cdn.jsdelivr.net/npm/sweetalert2@11';
+      script.async = true;
+      document.head.appendChild(script);
+    }
   }, []);
 
+  // ---------------------------------------------------------
+  // 2. ฟังก์ชันดึงข้อมูล (Dynamic API Call based on Role)
+  // ---------------------------------------------------------
+  const fetchHistory = useCallback(async () => {
+    setLoading(true);
+    const Swal = getSwal();
+    try {
+      // 📍 จุดสำคัญ: ถ้าเป็น Admin ให้เรียก API ตัวนึง ถ้าเป็น User ให้เรียกอีกตัวนึง
+      const endpoint = role === 'ADMIN' 
+        ? 'http://localhost:3000/bookings/admin/all' 
+        : 'http://localhost:3000/bookings/my';
+
+      const res = await axios.get(endpoint, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      
+      setBookings(res.data);
+    } catch (err) {
+      console.error(err);
+      if (Swal) {
+        Swal.fire('ผิดพลาด', 'ไม่สามารถโหลดประวัติการจองได้', 'error');
+      }
+    } finally {
+      setLoading(false);
+    }
+  }, [token, role]);
+
+  useEffect(() => {
+    if (!token) {
+      navigate('/login');
+      return;
+    }
+    fetchHistory();
+  }, [fetchHistory, token, navigate]);
+
+  // ---------------------------------------------------------
+  // 3. ฟังก์ชันช่วยตกแต่ง UI
+  // ---------------------------------------------------------
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'CONFIRMED': return { bg: '#dcfce7', text: '#15803d' };
+      case 'CANCELLED': return { bg: '#fee2e2', text: '#b91c1c' };
+      default: return { bg: '#fef3c7', text: '#92400e' }; // PENDING
+    }
+  };
+
   return (
-    <div style={{ padding: '40px 20px', backgroundColor: '#f8fafc', minHeight: '100vh' }}>
-      <div style={{ maxWidth: '800px', margin: '0 auto' }}>
+    <div style={{ padding: '40px 20px', backgroundColor: '#f8fafc', minHeight: '100vh', fontFamily: 'Kanit, sans-serif' }}>
+      <div style={{ maxWidth: '1000px', margin: '0 auto' }}>
         
-        <button onClick={() => navigate('/')} style={{ display: 'flex', alignItems: 'center', gap: '5px', background: 'none', border: 'none', color: '#3b82f6', cursor: 'pointer', marginBottom: '20px' }}>
-          <ArrowLeft size={18} /> กลับหน้าหลัก
-        </button>
-        
-        <h2 style={{ textAlign: 'center', marginBottom: '30px', fontWeight: '800' }}>ประวัติการจองของฉัน</h2>
+        {/* Header Section */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '30px' }}>
+          <button onClick={() => navigate('/')} style={{ display: 'flex', alignItems: 'center', gap: '5px', background: 'none', border: 'none', color: '#64748b', cursor: 'pointer', fontWeight: 600 }}>
+            <ChevronLeft size={20} /> กลับหน้าหลัก
+          </button>
+          <h1 style={{ margin: 0, fontSize: '1.8rem', color: '#1e293b' }}>
+            {role === 'ADMIN' ? '📑 ประวัติการจองทั้งหมด (Admin View)' : '🕒 ประวัติการจองของฉัน'}
+          </h1>
+          <div style={{ width: '100px' }}></div>
+        </div>
 
-        {bookings.length === 0 ? (
-          <p style={{ textAlign: 'center', color: '#64748b' }}>คุณยังไม่มีรายการจองในขณะนี้</p>
+        {loading ? (
+          <div style={{ textAlign: 'center', padding: '50px', color: '#64748b' }}>กำลังโหลดประวัติ...</div>
+        ) : bookings.length === 0 ? (
+          <div style={{ textAlign: 'center', padding: '100px', backgroundColor: 'white', borderRadius: '20px', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)' }}>
+            <p style={{ color: '#64748b', fontSize: '1.2rem' }}>ไม่พบประวัติการจองในขณะนี้</p>
+          </div>
         ) : (
-          bookings.map((booking) => {
-            const fieldName = booking?.field?.name ?? 'สนามฟุตบอล';
-            const status = booking?.status ?? 'PENDING';
-            const statusColor = status === 'CANCELLED' ? '#fee2e2' : status === 'PENDING' ? '#fef3c7' : '#dcfce7';
-            const statusTextColor = status === 'CANCELLED' ? '#b91c1c' : status === 'PENDING' ? '#92400e' : '#15803d';
-
-            return (
-              <div key={booking.id} style={{ backgroundColor: 'white', padding: '20px', borderRadius: '15px', marginBottom: '15px', boxShadow: '0 2px 4px rgba(0,0,0,0.05)', border: '1px solid #e2e8f0' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+            {bookings.map((booking) => (
+              <div 
+                key={booking.id} 
+                style={{ 
+                  backgroundColor: 'white', 
+                  padding: '20px', 
+                  borderRadius: '15px', 
+                  boxShadow: '0 2px 4px rgba(0,0,0,0.05)',
+                  border: '1px solid #e2e8f0',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center'
+                }}
+              >
+                {/* ข้อมูลการจอง */}
+                <div style={{ display: 'flex', gap: '20px', alignItems: 'center' }}>
+                  <div style={{ backgroundColor: '#eff6ff', padding: '15px', borderRadius: '12px' }}>
+                    <Calendar size={24} color="#3b82f6" />
+                  </div>
                   <div>
-                    <h3 style={{ margin: 0, color: '#1e293b' }}>{fieldName}</h3>
-                    <p style={{ fontSize: '0.9rem', color: '#64748b', marginTop: 5 }}>
-                      <Calendar size={14} style={{ verticalAlign: 'middle' }} /> {booking.bookingDate} | 
-                      <Clock size={14} style={{ verticalAlign: 'middle', marginLeft: 10 }} /> {booking.startTime}-{booking.endTime}
-                    </p>
-                  </div>
-                  <div style={{ textAlign: 'right' }}>
-                    <span style={{ 
-                      padding: '4px 12px', borderRadius: '20px', fontSize: '0.8rem', fontWeight: 'bold',
-                      backgroundColor: statusColor, color: statusTextColor
-                    }}>
-                      {status === 'PENDING' ? 'รอดำเนินการ' : status === 'CANCELLED' ? 'ยกเลิก' : 'ยืนยันแล้ว'}
-                    </span>
-                    <div style={{ marginTop: '8px', fontWeight: 'bold', fontSize: '1.1rem' }}>
-                      ฿{Number(booking.totalPrice).toLocaleString()}
+                    <h3 style={{ margin: '0 0 5px 0', fontSize: '1.1rem', color: '#1e293b' }}>{booking.field.name}</h3>
+                    <div style={{ display: 'flex', gap: '15px', color: '#64748b', fontSize: '0.9rem' }}>
+                      <span style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                        <Clock size={14} /> {booking.startTime} - {booking.endTime}
+                      </span>
+                      <span style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                        <Calendar size={14} /> {booking.bookingDate}
+                      </span>
                     </div>
+                    {/* 📍 สำหรับ Admin: แสดงชื่อลูกค้าเพิ่ม */}
+                    {role === 'ADMIN' && (
+                      <div style={{ marginTop: '8px', fontSize: '0.85rem', color: '#0066FF', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '5px' }}>
+                        <User size={14} /> ผู้จอง: {booking.user?.username || 'ไม่ระบุชื่อ'}
+                      </div>
+                    )}
                   </div>
                 </div>
-                
-                <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '15px', marginTop: '15px', borderTop: '1px solid #f1f5f9', paddingTop: '10px' }}>
-                  <button onClick={() => toggleOpen(booking.id)} style={{ background: 'none', border: 'none', color: '#3b82f6', cursor: 'pointer', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: 4 }}>
-                    {openIds[booking.id] ? <ChevronUp size={14}/> : <ChevronDown size={14}/>} รายละเอียด
-                  </button>
 
-                  {status === 'PENDING' && (
-                    <button onClick={() => handleCancel(booking.id)} style={{ background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      <i className="bi bi-trash" style={{ fontSize: 16 }} />
-                      <span>ยกเลิกการจอง</span>
-                    </button>
-                  )}
-                </div>
-
-                {openIds[booking.id] && (
-                  <div style={{ marginTop: '10px', padding: '12px', backgroundColor: '#f8fafc', borderRadius: '8px', fontSize: '0.85rem', color: '#475569', border: '1px solid #e2e8f0' }}>
-                    <p style={{ margin: '4px 0' }}><strong>Booking ID:</strong> #{booking.id}</p>
-                    <p style={{ margin: '4px 0' }}><strong>บันทึกเมื่อ:</strong> {new Date(booking.createdAt).toLocaleString()}</p>
-                    <p style={{ margin: '4px 0' }}><strong>ราคาต่อชั่วโมง:</strong> ฿{booking.field?.pricePerHour ?? '-'}</p>
+                {/* ราคาสรุปและสถานะ */}
+                <div style={{ textAlign: 'right' }}>
+                  <div style={{ fontSize: '1.2rem', fontWeight: 800, color: '#1e293b', marginBottom: '8px' }}>
+                    ฿{booking.totalPrice.toLocaleString()}
                   </div>
-                )}
+                  <span style={{ 
+                    padding: '5px 15px', 
+                    borderRadius: '20px', 
+                    fontSize: '0.75rem', 
+                    fontWeight: 700,
+                    backgroundColor: getStatusColor(booking.status).bg,
+                    color: getStatusColor(booking.status).text
+                  }}>
+                    {booking.status === 'CONFIRMED' ? 'ชำระเงินแล้ว' : booking.status === 'CANCELLED' ? 'ยกเลิกแล้ว' : 'รอการตรวจสอบ'}
+                  </span>
+                </div>
               </div>
-            );
-          })
+            ))}
+          </div>
         )}
       </div>
     </div>

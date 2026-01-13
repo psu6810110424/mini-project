@@ -40,7 +40,7 @@ const Home = () => {
 
   const processBooking = async (field: Field, bookingData: any) => {
     try {
-      Swal.fire({ title: 'กำลังตรวจสอบความว่าง...', didOpen: () => Swal.showLoading() });
+      Swal.fire({ title: 'กำลังตรวจสอบสนาม...', didOpen: () => Swal.showLoading() });
       
       const res = await axios.get(`http://localhost:3000/bookings/check`, {
         params: { 
@@ -224,7 +224,7 @@ const Home = () => {
                     <h3 style={{ margin: '0 0 10px 0', fontSize: '1.2rem', color: '#2d3748' }}>{field.name}</h3>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '5px', marginBottom: '20px', color: '#718096', fontSize: '0.9rem' }}>
                       <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}><Clock size={14} /> Open 07:00 - 23:00</span>
-                      <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}><Trophy size={14} /> หญ้าเทียมเกรด A</span>
+                      <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}><Trophy size={14} /> หญ้าเทียมเกรด A-B</span>
                     </div>
                     <button onClick={() => token ? handleBooking(field) : navigate('/login')} style={{ width: '100%', background: '#edf2f7', border: 'none', padding: '12px', borderRadius: '8px', color: '#2d3748', fontWeight: 700, cursor: 'pointer', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px' }}>
                       จองสนามตอนนี้ <ChevronRight size={18} />

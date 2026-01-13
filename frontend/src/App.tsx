@@ -33,21 +33,9 @@ const AppContent = () => {
           <Route path="/register" element={<Register />} />
           <Route path="/admin/login" element={<AdminLogin />} />
           <Route path="/admin/register-secret-access" element={<AdminRegister />} />
-
-          <Route 
-            path="/payment" 
-            element={<ProtectedRoute allowedRole="USER"><Payment /></ProtectedRoute>} 
-          />
-          <Route 
-            path="/my-bookings" 
-            element={<ProtectedRoute allowedRole="USER"><MyBookings /></ProtectedRoute>} 
-          />
-
-          <Route 
-            path="/admin/dashboard" 
-            element={<ProtectedRoute allowedRole="ADMIN"><AdminDashboard /></ProtectedRoute>} 
-          />
-
+          <Route path="/payment" element={<ProtectedRoute allowedRole="USER"><Payment /></ProtectedRoute>} />
+          <Route path="/my-bookings" element={<MyBookings />} />
+          <Route path="/admin/dashboard" element={<ProtectedRoute allowedRole="ADMIN"><AdminDashboard /></ProtectedRoute>} />
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       </main>

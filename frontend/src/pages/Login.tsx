@@ -23,7 +23,7 @@ const Login: React.FC = () => {
       if (response.data.user.role === 'ADMIN') {
         const result = await Swal.fire({
           icon: 'warning',
-          title: 'ไม่อนุญาต',
+          title: 'การเข้าถึงของคุณถูกปฏิเสธ',
           text: 'บัญชี Admin กรุณาล็อกอินผ่านหน้า Admin\nต้องการไปหน้าล็อกอินของ Admin และกรอกชื่อผู้ใช้อัตโนมัติหรือไม่?',
           showCancelButton: true,
           confirmButtonText: 'ไปหน้า Admin',
